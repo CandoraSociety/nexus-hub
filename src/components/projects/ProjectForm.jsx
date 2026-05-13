@@ -26,6 +26,8 @@ export default function ProjectForm({ project, onSubmit, onCancel }) {
     team_members: [],
   });
 
+  const isEditMode = !!project;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(data);
@@ -42,66 +44,86 @@ export default function ProjectForm({ project, onSubmit, onCancel }) {
             required
             className="col-span-1 md:col-span-2"
           />
-          <Select value={data.project_type} onValueChange={(v) => setData({ ...data, project_type: v })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Project Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="program_launch">Program Launch</SelectItem>
-              <SelectItem value="operational_improvement">Operational Improvement</SelectItem>
-              <SelectItem value="fundraising_grant">Fundraising/Grant</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={data.priority} onValueChange={(v) => setData({ ...data, priority: v })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Priority" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="low">Low</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="high">High</SelectItem>
-              <SelectItem value="critical">Critical</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={data.status} onValueChange={(v) => setData({ ...data, status: v })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="planning">Planning</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="on_hold">On Hold</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="archived">Archived</SelectItem>
-            </SelectContent>
-          </Select>
-          <Input
-            type="date"
-            placeholder="Start date"
-            value={data.start_date}
-            onChange={(e) => setData({ ...data, start_date: e.target.value })}
-          />
-          <Input
-            type="date"
-            placeholder="End date"
-            value={data.end_date}
-            onChange={(e) => setData({ ...data, end_date: e.target.value })}
-          />
-          <Input
-            type="number"
-            placeholder="Budget"
-            value={data.budget}
-            onChange={(e) => setData({ ...data, budget: e.target.value })}
-          />
-          <Input
-            type="number"
-            min="0"
-            max="100"
-            placeholder="Progress %"
-            value={data.progress_percent}
-            onChange={(e) => setData({ ...data, progress_percent: parseInt(e.target.value) })}
-          />
+          <div>
+            <label className="text-sm font-medium mb-2 block">Project Type</label>
+            <Select value={data.project_type} onValueChange={(v) => setData({ ...data, project_type: v })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="program_launch">Program Launch</SelectItem>
+                <SelectItem value="operational_improvement">Operational Improvement</SelectItem>
+                <SelectItem value="fundraising_grant">Fundraising/Grant</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-2 block">Priority Level</label>
+            <Select value={data.priority} onValueChange={(v) => setData({ ...data, priority: v })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="critical">Critical</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-2 block">Status</label>
+            <Select value={data.status} onValueChange={(v) => setData({ ...data, status: v })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="planning">Planning</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="on_hold">On Hold</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-2 block">Project Start Date</label>
+            <Input
+              type="date"
+              value={data.start_date}
+              onChange={(e) => setData({ ...data, start_date: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-2 block">Project End Date</label>
+            <Input
+              type="date"
+              value={data.end_date}
+              onChange={(e) => setData({ ...data, end_date: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-2 block">Budget</label>
+            <Input
+              type="number"
+              placeholder="$"
+              value={data.budget}
+              onChange={(e) => setData({ ...data, budget: e.target.value })}
+            />
+          </div>
+          {isEditMode && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">Progress %</label>
+              <Input
+                type="number"
+                min="0"
+                max="100"
+                value={data.progress_percent}
+                onChange={(e) => setData({ ...data, progress_percent: parseInt(e.target.value) })}
+              />
+            </div>
+          )}
         </div>
 
         <Textarea
@@ -111,12 +133,17 @@ export default function ProjectForm({ project, onSubmit, onCancel }) {
           className="min-h-24"
         />
 
-        <Textarea
-          placeholder="Lessons learned"
-          value={data.lessons_learned}
-          onChange={(e) => setData({ ...data, lessons_learned: e.target.value })}
-          className="min-h-20"
-        />
+        {isEditMode && (
+          <div>
+            <label className="text-sm font-medium mb-2 block">Lessons Learned (from project completion)</label>
+            <Textarea
+              placeholder="What worked well? What would you do differently? Key takeaways for future projects..."
+              value={data.lessons_learned}
+              onChange={(e) => setData({ ...data, lessons_learned: e.target.value })}
+              className="min-h-20"
+            />
+          </div>
+        )}
 
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={onCancel}>
