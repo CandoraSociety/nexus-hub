@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Briefcase, Zap, Calendar, BookOpen, LogOut, User, Menu, X } from 'lucide-react';
+import { Briefcase, Zap, Calendar, BookOpen, LogOut, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/AuthContext';
@@ -28,18 +28,33 @@ export default function MainLayout() {
           sidebarOpen ? 'w-64' : 'w-20'
         }`}
       >
-        {/* Logo */}
-        <div className="p-6 border-b border-border">
-          {sidebarOpen ? (
-            <>
-              <h1 className="text-2xl font-heading font-bold text-primary">OrgHub</h1>
-              <p className="text-xs text-muted-foreground mt-1">Manage everything in one place</p>
-            </>
-          ) : (
-            <div className="w-8 h-8 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold">
-              O
-            </div>
-          )}
+        {/* Logo & Toggle */}
+        <div className="p-6 border-b border-border flex items-center justify-between">
+          <div className="flex-1">
+            {sidebarOpen ? (
+              <>
+                <h1 className="text-2xl font-heading font-bold text-primary">OrgHub</h1>
+                <p className="text-xs text-muted-foreground mt-1">Manage everything in one place</p>
+              </>
+            ) : (
+              <div className="w-8 h-8 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                O
+              </div>
+            )}
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="h-8 w-8 flex-shrink-0 -mr-2"
+            title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            {sidebarOpen ? (
+              <ChevronLeft className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </Button>
         </div>
 
         {/* Navigation */}
@@ -89,18 +104,7 @@ export default function MainLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
         <div className="h-16 border-b border-border bg-card px-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="h-8 w-8"
-              title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-            >
-              {sidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </Button>
-            <h2 className="text-lg font-heading font-semibold">OrgHub</h2>
-          </div>
+          <h2 className="text-lg font-heading font-semibold">OrgHub</h2>
           <div className="text-sm text-muted-foreground">
             {user?.role === 'admin' && (
               <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">
