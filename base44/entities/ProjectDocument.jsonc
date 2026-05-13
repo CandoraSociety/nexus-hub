@@ -1,0 +1,46 @@
+{
+  "name": "ProjectDocument",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Parent project ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Document title"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "charter",
+        "scope",
+        "plan",
+        "status_report",
+        "risk_register",
+        "other"
+      ],
+      "description": "Type of document"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL to the document file"
+    },
+    "cloud_link": {
+      "type": "string",
+      "description": "Link to cloud storage (Google Drive, OneDrive, etc)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Document description"
+    },
+    "uploaded_by": {
+      "type": "string",
+      "description": "Email of uploader"
+    }
+  },
+  "required": [
+    "project_id",
+    "title"
+  ]
+}

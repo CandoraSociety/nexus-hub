@@ -1,0 +1,42 @@
+{
+  "name": "ProjectObjective",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Parent project ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Objective title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed objective description"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed",
+        "on_hold"
+      ],
+      "default": "not_started",
+      "description": "Objective status"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium"
+    }
+  },
+  "required": [
+    "project_id",
+    "title"
+  ]
+}

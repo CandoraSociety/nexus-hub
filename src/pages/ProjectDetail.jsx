@@ -2,16 +2,24 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TaskList from '@/components/projects/TaskList';
+import ProjectCharterTab from '@/components/projects/ProjectCharterTab';
+import ProjectScopeTab from '@/components/projects/ProjectScopeTab';
+import ProjectObjectivesTab from '@/components/projects/ProjectObjectivesTab';
+import ProjectMilestonesTab from '@/components/projects/ProjectMilestonesTab';
+import ProjectDocumentsTab from '@/components/projects/ProjectDocumentsTab';
+import { useComplexityLevel } from '@/hooks/useComplexityLevel';
 
 export default function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { level } = useComplexityLevel();
 
   const { data: project, isLoading, error } = useQuery({
     queryKey: ['project', id],
@@ -21,10 +29,38 @@ export default function ProjectDetail() {
     },
   });
 
-  const { data: tasks = [], isLoading: tasksLoading } = useQuery({
+  const { data: tasks = [] } = useQuery({
     queryKey: ['tasks', id],
     queryFn: async () => {
       return await base44.entities.ProjectTask.filter({ project_id: id });
+    },
+  });
+
+  const { data: objectives = [] } = useQuery({
+    queryKey: ['objectives', id],
+    queryFn: async () => {
+      return await base44.entities.ProjectObjective.filter({ project_id: id });
+    },
+  });
+
+  const { data: milestones = [] } = useQuery({
+    queryKey: ['milestones', id],
+    queryFn: async () => {
+      return await base44.entities.ProjectMilestone.filter({ project_id: id });
+    },
+  });
+
+  const { data: documents = [] } = useQuery({
+    queryKey: ['documents', id],
+    queryFn: async () => {
+      return await base44.entities.ProjectDocument.filter({ project_id: id });
+    },
+  });
+
+  const updateProjectMutation = useMutation({
+    mutationFn: (data) => base44.entities.Project.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['project', id] });
     },
   });
 
@@ -46,6 +82,62 @@ export default function ProjectDetail() {
     mutationFn: (taskId) => base44.entities.ProjectTask.delete(taskId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks', id] });
+    },
+  });
+
+  const createObjectiveMutation = useMutation({
+    mutationFn: (data) => base44.entities.ProjectObjective.create({ ...data, project_id: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['objectives', id] });
+    },
+  });
+
+  const updateObjectiveMutation = useMutation({
+    mutationFn: (obj) => base44.entities.ProjectObjective.update(obj.id, obj),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['objectives', id] });
+    },
+  });
+
+  const deleteObjectiveMutation = useMutation({
+    mutationFn: (objId) => base44.entities.ProjectObjective.delete(objId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['objectives', id] });
+    },
+  });
+
+  const createMilestoneMutation = useMutation({
+    mutationFn: (data) => base44.entities.ProjectMilestone.create({ ...data, project_id: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['milestones', id] });
+    },
+  });
+
+  const updateMilestoneMutation = useMutation({
+    mutationFn: (m) => base44.entities.ProjectMilestone.update(m.id, m),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['milestones', id] });
+    },
+  });
+
+  const deleteMilestoneMutation = useMutation({
+    mutationFn: (mId) => base44.entities.ProjectMilestone.delete(mId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['milestones', id] });
+    },
+  });
+
+  const createDocumentMutation = useMutation({
+    mutationFn: (data) => base44.entities.ProjectDocument.create({ ...data, project_id: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents', id] });
+    },
+  });
+
+  const deleteDocumentMutation = useMutation({
+    mutationFn: (docId) => base44.entities.ProjectDocument.delete(docId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents', id] });
     },
   });
 
@@ -160,13 +252,116 @@ export default function ProjectDetail() {
         )}
       </Card>
 
-      {/* Tasks Section */}
-      <TaskList
-        tasks={tasks}
-        onCreateTask={(data) => createTaskMutation.mutate(data)}
-        onUpdateTask={(task) => updateTaskMutation.mutate({ taskId: task.id, data: task })}
-        onDeleteTask={(taskId) => deleteTaskMutation.mutate(taskId)}
-      />
+      {/* Complexity Toggle & Tabs */}
+      <div className="mt-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-heading font-bold">Project Management</h2>
+          <div className="text-xs text-muted-foreground">
+            Viewing as: <span className="font-medium capitalize">{level}</span>
+          </div>
+        </div>
+
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="charter">Charter</TabsTrigger>
+            <TabsTrigger value="scope">Scope</TabsTrigger>
+            <TabsTrigger value="objectives">Objectives</TabsTrigger>
+            <TabsTrigger value="milestones">Timeline</TabsTrigger>
+            <TabsTrigger value="tasks">Tasks</TabsTrigger>
+            {level !== 'simple' && <TabsTrigger value="documents">Documents</TabsTrigger>}
+          </TabsList>
+
+          <TabsContent value="overview" className="mt-6">
+            <Card className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-semibold mb-2">Progress</h3>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary transition-all"
+                        style={{ width: `${project.progress_percent || 0}%` }}
+                      />
+                    </div>
+                    <span className="font-medium">{project.progress_percent || 0}%</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">Quick Stats</h3>
+                  <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">Tasks</p>
+                      <p className="text-2xl font-bold">{tasks.length}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Objectives</p>
+                      <p className="text-2xl font-bold">{objectives.length}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Milestones</p>
+                      <p className="text-2xl font-bold">{milestones.length}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="charter" className="mt-6">
+            <ProjectCharterTab
+              project={project}
+              onUpdate={(data) => updateProjectMutation.mutate(data)}
+            />
+          </TabsContent>
+
+          <TabsContent value="scope" className="mt-6">
+            <ProjectScopeTab
+              project={project}
+              onUpdate={(data) => updateProjectMutation.mutate(data)}
+            />
+          </TabsContent>
+
+          <TabsContent value="objectives" className="mt-6">
+            <ProjectObjectivesTab
+              objectives={objectives}
+              onCreateObjective={(data) => createObjectiveMutation.mutate(data)}
+              onUpdateObjective={(obj) => updateObjectiveMutation.mutate(obj)}
+              onDeleteObjective={(objId) => deleteObjectiveMutation.mutate(objId)}
+            />
+          </TabsContent>
+
+          <TabsContent value="milestones" className="mt-6">
+            <ProjectMilestonesTab
+              milestones={milestones}
+              onCreateMilestone={(data) => createMilestoneMutation.mutate(data)}
+              onUpdateMilestone={(m) => updateMilestoneMutation.mutate(m)}
+              onDeleteMilestone={(mId) => deleteMilestoneMutation.mutate(mId)}
+              complexity={level}
+            />
+          </TabsContent>
+
+          <TabsContent value="tasks" className="mt-6">
+            <TaskList
+              tasks={tasks}
+              onCreateTask={(data) => createTaskMutation.mutate(data)}
+              onUpdateTask={(task) => updateTaskMutation.mutate({ taskId: task.id, data: task })}
+              onDeleteTask={(taskId) => deleteTaskMutation.mutate(taskId)}
+            />
+          </TabsContent>
+
+          {level !== 'simple' && (
+            <TabsContent value="documents" className="mt-6">
+              <ProjectDocumentsTab
+                documents={documents}
+                onCreateDocument={(data) => createDocumentMutation.mutate(data)}
+                onDeleteDocument={(docId) => deleteDocumentMutation.mutate(docId)}
+                cloudFolderId={project.cloud_folder_id}
+              />
+            </TabsContent>
+          )}
+        </Tabs>
+      </div>
     </div>
   );
 }

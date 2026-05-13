@@ -1,0 +1,51 @@
+{
+  "name": "ProjectMilestone",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Parent project ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Milestone title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Milestone description"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target completion date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "in_progress",
+        "completed",
+        "at_risk"
+      ],
+      "default": "planned",
+      "description": "Milestone status"
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of deliverables"
+    },
+    "completion_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "Completion percentage (0-100)"
+    }
+  },
+  "required": [
+    "project_id",
+    "title",
+    "target_date"
+  ]
+}
