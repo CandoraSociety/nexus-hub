@@ -1,0 +1,79 @@
+{
+  "name": "Program",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Program name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed program description"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "active",
+        "paused",
+        "archived"
+      ],
+      "default": "planning",
+      "description": "Program status"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Manager responsible for program"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "adult_learning",
+        "community_services",
+        "youth_programs",
+        "health_wellness",
+        "other"
+      ],
+      "description": "Program category"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Program start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Program end date"
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of participant emails"
+    },
+    "budget": {
+      "type": "number",
+      "description": "Program budget"
+    },
+    "cloud_folder_id": {
+      "type": "string",
+      "description": "Cloud storage folder ID for program files"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Program notes and institutional memory"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for organization"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

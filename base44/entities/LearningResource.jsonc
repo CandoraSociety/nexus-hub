@@ -1,0 +1,71 @@
+{
+  "name": "LearningResource",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Resource title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Resource description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "project_management",
+        "program_planning",
+        "event_management",
+        "general_skills"
+      ],
+      "description": "Resource category"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "article",
+        "guide",
+        "template",
+        "video",
+        "checklist",
+        "course"
+      ],
+      "description": "Resource type"
+    },
+    "content": {
+      "type": "string",
+      "description": "Resource content or link"
+    },
+    "context_trigger": {
+      "type": "string",
+      "description": "When to show this resource (e.g., 'project_creation', 'task_assignment')"
+    },
+    "pmi_reference": {
+      "type": "string",
+      "description": "PMI knowledge area or process reference"
+    },
+    "difficulty_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner"
+    },
+    "estimated_read_time": {
+      "type": "number",
+      "description": "Estimated reading time in minutes"
+    },
+    "is_curated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Part of official learning path"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "type"
+  ]
+}

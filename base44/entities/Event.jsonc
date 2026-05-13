@@ -1,0 +1,127 @@
+{
+  "name": "Event",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Event name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Event description"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "annual_org_event",
+        "external_public",
+        "internal_workshop",
+        "community_event",
+        "training",
+        "other"
+      ],
+      "description": "Type of event"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "confirmed",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "planning"
+    },
+    "organizer_id": {
+      "type": "string",
+      "description": "Manager responsible for event"
+    },
+    "team_members": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Team member emails"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event start date and time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event end date and time"
+    },
+    "location": {
+      "type": "string",
+      "description": "Event location (physical or virtual)"
+    },
+    "expected_attendance": {
+      "type": "number",
+      "description": "Expected number of attendees"
+    },
+    "budget": {
+      "type": "number",
+      "description": "Event budget"
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is this a recurring event"
+    },
+    "recurrence_pattern": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly",
+        "yearly",
+        "custom"
+      ],
+      "description": "If recurring, the pattern"
+    },
+    "template_id": {
+      "type": "string",
+      "description": "Reference to event template for reuse"
+    },
+    "cloud_folder_id": {
+      "type": "string",
+      "description": "Cloud storage folder ID for event files"
+    },
+    "corporate_memory": {
+      "type": "string",
+      "description": "Lessons learned, what worked, what didn't"
+    },
+    "checklist": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item": {
+            "type": "string"
+          },
+          "completed": {
+            "type": "boolean"
+          },
+          "assigned_to": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Event planning checklist"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for organization"
+    }
+  },
+  "required": [
+    "name",
+    "start_date"
+  ]
+}

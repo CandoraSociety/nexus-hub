@@ -1,0 +1,98 @@
+{
+  "name": "Project",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Project name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Project description"
+    },
+    "project_type": {
+      "type": "string",
+      "enum": [
+        "program_launch",
+        "operational_improvement",
+        "fundraising_grant",
+        "other"
+      ],
+      "description": "Type of project"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "in_progress",
+        "on_hold",
+        "completed",
+        "archived"
+      ],
+      "default": "planning",
+      "description": "Project status"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "description": "Project priority"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Manager responsible for project"
+    },
+    "team_members": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of team member emails"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Project start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target end date"
+    },
+    "budget": {
+      "type": "number",
+      "description": "Project budget"
+    },
+    "progress_percent": {
+      "type": "number",
+      "description": "Overall project progress (0-100)"
+    },
+    "cloud_folder_id": {
+      "type": "string",
+      "description": "Cloud storage folder ID for project files"
+    },
+    "linked_program_id": {
+      "type": "string",
+      "description": "Related program ID if applicable"
+    },
+    "lessons_learned": {
+      "type": "string",
+      "description": "Institutional memory: lessons learned from this project"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for organization"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
