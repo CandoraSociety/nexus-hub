@@ -9,6 +9,7 @@ import MainLayout from '@/components/MainLayout';
 import Dashboard from '@/pages/Dashboard';
 import Programs from '@/pages/Programs';
 import Projects from '@/pages/Projects';
+import ProjectDetail from '@/pages/ProjectDetail';
 import Events from '@/pages/Events';
 
 const AuthenticatedApp = () => {
@@ -41,6 +42,7 @@ const AuthenticatedApp = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="/programs" element={<Programs />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/:id" element={<ProjectDetail />} />
         <Route path="/events" element={<Events />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
