@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useComplexityLevel, getVisibleFields } from '@/hooks/useComplexityLevel';
 
 export default function ProjectForm({ project, onSubmit, onCancel }) {
   const [data, setData] = useState(project || {
@@ -27,6 +28,8 @@ export default function ProjectForm({ project, onSubmit, onCancel }) {
   });
 
   const isEditMode = !!project;
+  const { level } = useComplexityLevel();
+  const visibleFields = getVisibleFields(level);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -44,34 +47,38 @@ export default function ProjectForm({ project, onSubmit, onCancel }) {
             required
             className="col-span-1 md:col-span-2"
           />
-          <div>
-            <label className="text-sm font-medium mb-2 block">Project Type</label>
-            <Select value={data.project_type} onValueChange={(v) => setData({ ...data, project_type: v })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="program_launch">Program Launch</SelectItem>
-                <SelectItem value="operational_improvement">Operational Improvement</SelectItem>
-                <SelectItem value="fundraising_grant">Fundraising/Grant</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-2 block">Priority Level</label>
-            <Select value={data.priority} onValueChange={(v) => setData({ ...data, priority: v })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="critical">Critical</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {visibleFields.project_type && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">Project Type</label>
+              <Select value={data.project_type} onValueChange={(v) => setData({ ...data, project_type: v })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="program_launch">Program Launch</SelectItem>
+                  <SelectItem value="operational_improvement">Operational Improvement</SelectItem>
+                  <SelectItem value="fundraising_grant">Fundraising/Grant</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          {visibleFields.priority && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">Priority Level</label>
+              <Select value={data.priority} onValueChange={(v) => setData({ ...data, priority: v })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="critical">Critical</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div>
             <label className="text-sm font-medium mb-2 block">Status</label>
             <Select value={data.status} onValueChange={(v) => setData({ ...data, status: v })}>
@@ -112,7 +119,7 @@ export default function ProjectForm({ project, onSubmit, onCancel }) {
               onChange={(e) => setData({ ...data, budget: e.target.value })}
             />
           </div>
-          {isEditMode && (
+          {isEditMode && visibleFields.progress_percent && (
             <div>
               <label className="text-sm font-medium mb-2 block">Progress %</label>
               <Input
@@ -133,7 +140,7 @@ export default function ProjectForm({ project, onSubmit, onCancel }) {
           className="min-h-24"
         />
 
-        {isEditMode && (
+        {isEditMode && visibleFields.lessons_learned && (
           <div>
             <label className="text-sm font-medium mb-2 block">Lessons Learned (from project completion)</label>
             <Textarea
