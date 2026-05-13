@@ -1,21 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import TaskList from '@/components/projects/TaskList';
 
 export default function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: project, isLoading, error } = useQuery({
     queryKey: ['project', id],
     queryFn: async () => {
       const projects = await base44.entities.Project.list();
       return projects.find(p => p.id === id);
+    },
+  });
+
+  const { data: tasks = [], isLoading: tasksLoading } = useQuery({
+    queryKey: ['tasks', id],
+    queryFn: async () => {
+      return await base44.entities.ProjectTask.filter({ project_id: id });
+    },
+  });
+
+  const createTaskMutation = useMutation({
+    mutationFn: (taskData) => base44.entities.ProjectTask.create({ ...taskData, project_id: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', id] });
+    },
+  });
+
+  const updateTaskMutation = useMutation({
+    mutationFn: ({ taskId, data }) => base44.entities.ProjectTask.update(taskId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', id] });
+    },
+  });
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: (taskId) => base44.entities.ProjectTask.delete(taskId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', id] });
     },
   });
 
@@ -129,6 +159,14 @@ export default function ProjectDetail() {
           </div>
         )}
       </Card>
+
+      {/* Tasks Section */}
+      <TaskList
+        tasks={tasks}
+        onCreateTask={(data) => createTaskMutation.mutate(data)}
+        onUpdateTask={(task) => updateTaskMutation.mutate({ taskId: task.id, data: task })}
+        onDeleteTask={(taskId) => deleteTaskMutation.mutate(taskId)}
+      />
     </div>
   );
 }
