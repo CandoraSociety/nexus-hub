@@ -79,5 +79,9 @@ module.exports = {
   		}
   	}
   },
+  safelist: [
+    'w-20',
+    'w-64',
+  ],
   plugins: [require("tailwindcss-animate")],
 }
