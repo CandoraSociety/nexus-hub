@@ -113,16 +113,29 @@ export default function ProgramForm({ program, mode = 'existing', onSubmit, onCa
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
-            <Input
-              type="date"
-              value={data.start_date}
-              onChange={(e) => setData({ ...data, start_date: e.target.value })}
-            />
-            <Input
-              type="date"
-              value={data.end_date}
-              onChange={(e) => setData({ ...data, end_date: e.target.value })}
-            />
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground font-medium">
+                {effectiveMode === 'existing' ? 'Program Origin Date' : 'Planned Start Date'}
+              </label>
+              <Input
+                type="date"
+                value={data.start_date}
+                onChange={(e) => setData({ ...data, start_date: e.target.value })}
+              />
+            </div>
+            {/* End date: only show for design mode, or for existing if paused/archived */}
+            {(effectiveMode === 'design' || ['paused', 'archived'].includes(data.status)) && (
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-muted-foreground font-medium">
+                  {effectiveMode === 'existing' ? (data.status === 'paused' ? 'Date Paused' : 'Date Ended / Archived') : 'Planned End Date'}
+                </label>
+                <Input
+                  type="date"
+                  value={data.end_date}
+                  onChange={(e) => setData({ ...data, end_date: e.target.value })}
+                />
+              </div>
+            )}
             <Input
               type="number"
               placeholder="Budget ($)"

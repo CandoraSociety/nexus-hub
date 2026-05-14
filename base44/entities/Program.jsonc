@@ -48,12 +48,12 @@
     "start_date": {
       "type": "string",
       "format": "date",
-      "description": "Program start date"
+      "description": "Program origin/start date"
     },
     "end_date": {
       "type": "string",
       "format": "date",
-      "description": "Program end date"
+      "description": "End date (only for paused/archived programs or design mode)"
     },
     "participants": {
       "type": "array",
@@ -68,7 +68,7 @@
     },
     "cloud_folder_id": {
       "type": "string",
-      "description": "Cloud storage folder ID for program files"
+      "description": "Cloud storage folder ID"
     },
     "notes": {
       "type": "string",
@@ -163,24 +163,28 @@
       },
       "description": "Program improvement plans"
     },
+    "needs_assessment": {
+      "type": "string",
+      "description": "Step 1: Needs assessment and evidence of community need"
+    },
     "design_vision": {
       "type": "string",
-      "description": "Program design: vision and purpose"
+      "description": "Step 3: Vision and theory of change"
     },
     "design_target_population": {
       "type": "string",
-      "description": "Program design: who this program serves"
+      "description": "Step 2: Who this program serves"
     },
     "design_goals": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Program design: key goals"
+      "description": "Step 4: SMART goals and outcomes"
     },
     "design_resources_needed": {
       "type": "string",
-      "description": "Program design: resources, staffing, funding needed"
+      "description": "Step 5: Resources, staffing, funding needed"
     },
     "design_implementation_steps": {
       "type": "array",
@@ -202,15 +206,15 @@
           }
         }
       },
-      "description": "Program design: implementation steps/checklist"
+      "description": "Step 6: Implementation plan"
     },
     "design_risks": {
       "type": "string",
-      "description": "Program design: anticipated risks and mitigations"
+      "description": "Step 7: Risks and sustainability plan"
     },
     "design_evaluation_plan": {
       "type": "string",
-      "description": "Program design: how success will be measured"
+      "description": "Step 8: Evaluation and CQI plan"
     }
   },
   "required": [

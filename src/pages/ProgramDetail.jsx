@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Plus, X, Edit2, Save, CheckCircle2, Circle, AlertTriangle, TrendingUp, ClipboardList, Lightbulb } from 'lucide-react';
 import ProgramForm from '@/components/programs/ProgramForm';
+import ProgramDesignWizard from '@/components/programs/ProgramDesignWizard';
 
 const severityColors = {
   low: 'bg-yellow-100 text-yellow-800',
@@ -33,6 +34,7 @@ export default function ProgramDetail() {
   const { id } = useParams();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
+  const [designWizard, setDesignWizard] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
   // Gap form
@@ -130,17 +132,40 @@ export default function ProgramDetail() {
     ]),
   ];
 
+  // Design wizard save
+  const handleWizardSave = (wizardData) => {
+    updateMutation.mutate(wizardData);
+    setDesignWizard(false);
+  };
+
   if (editing) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" onClick={() => setEditing(false)} className="gap-2"><ArrowLeft className="w-4 h-4" /> Back</Button>
-        </div>
+        <Button variant="ghost" onClick={() => setEditing(false)} className="gap-2"><ArrowLeft className="w-4 h-4" /> Back</Button>
         <ProgramForm
           program={program}
           mode={program.program_mode}
           onSubmit={(data) => updateMutation.mutate(data)}
           onCancel={() => setEditing(false)}
+        />
+      </div>
+    );
+  }
+
+  if (designWizard) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-heading font-bold">{program.name}</h1>
+            <p className="text-sm text-muted-foreground">Program Design Wizard</p>
+          </div>
+          <Button variant="ghost" onClick={() => setDesignWizard(false)} className="gap-2"><ArrowLeft className="w-4 h-4" /> Back to Program</Button>
+        </div>
+        <ProgramDesignWizard
+          program={program}
+          onSave={handleWizardSave}
+          onClose={() => setDesignWizard(false)}
         />
       </div>
     );
@@ -165,9 +190,16 @@ export default function ProgramDetail() {
             {program.category && <p className="text-sm text-muted-foreground capitalize">{program.category.replace(/_/g, ' ')}</p>}
           </div>
         </div>
-        <Button onClick={() => setEditing(true)} variant="outline" className="gap-2">
-          <Edit2 className="w-4 h-4" /> Edit Program
-        </Button>
+        <div className="flex gap-2">
+          {isDesign && (
+            <Button onClick={() => setDesignWizard(true)} className="gap-2">
+              <Lightbulb className="w-4 h-4" /> Design Wizard
+            </Button>
+          )}
+          <Button onClick={() => setEditing(true)} variant="outline" className="gap-2">
+            <Edit2 className="w-4 h-4" /> Edit Program
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -192,13 +224,17 @@ export default function ProgramDetail() {
           </Card>
           {program.start_date && (
             <Card className="p-4">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">Start Date</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                {isDesign ? 'Planned Start' : 'Program Origin Date'}
+              </p>
               <p className="text-lg font-semibold mt-1">{program.start_date}</p>
             </Card>
           )}
           {program.end_date && (
             <Card className="p-4">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">End Date</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                {isDesign ? 'Planned End' : program.status === 'paused' ? 'Date Paused' : 'Date Ended'}
+              </p>
               <p className="text-lg font-semibold mt-1">{program.end_date}</p>
             </Card>
           )}
@@ -401,67 +437,70 @@ export default function ProgramDetail() {
 
       {/* Design Tab */}
       {activeTab === 'design' && (
-        <div className="space-y-6">
-          {program.design_vision && (
-            <Card className="p-6">
-              <h3 className="font-semibold mb-2 flex items-center gap-2"><Lightbulb className="w-4 h-4 text-accent" /> Vision & Purpose</h3>
-              <p className="text-muted-foreground whitespace-pre-wrap">{program.design_vision}</p>
-            </Card>
-          )}
-          {program.design_target_population && (
-            <Card className="p-6">
-              <h3 className="font-semibold mb-2">Target Population</h3>
-              <p className="text-muted-foreground">{program.design_target_population}</p>
-            </Card>
-          )}
-          {(program.design_goals || []).length > 0 && (
-            <Card className="p-6">
-              <h3 className="font-semibold mb-3">Key Goals</h3>
-              <ul className="space-y-2">
-                {program.design_goals.map((g, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />{g}</li>
-                ))}
-              </ul>
-            </Card>
-          )}
-          {(program.design_implementation_steps || []).length > 0 && (
-            <Card className="p-6">
-              <h3 className="font-semibold mb-3">Implementation Steps</h3>
-              <div className="space-y-2">
-                {program.design_implementation_steps.map((s, i) => (
-                  <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50">
-                    <button onClick={() => toggleDesignStep(i)}>
-                      {s.done ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <Circle className="w-5 h-5 text-muted-foreground" />}
-                    </button>
-                    <span className={`flex-1 text-sm ${s.done ? 'line-through text-muted-foreground' : ''}`}>{s.step}</span>
-                    {s.owner && <span className="text-xs text-muted-foreground">{s.owner}</span>}
-                    {s.due_date && <span className="text-xs text-muted-foreground">{s.due_date}</span>}
-                  </div>
-                ))}
-              </div>
-            </Card>
-          )}
-          {program.design_resources_needed && (
-            <Card className="p-6">
-              <h3 className="font-semibold mb-2">Resources Needed</h3>
-              <p className="text-muted-foreground whitespace-pre-wrap">{program.design_resources_needed}</p>
-            </Card>
-          )}
-          {program.design_risks && (
-            <Card className="p-6">
-              <h3 className="font-semibold mb-2">Risks & Mitigations</h3>
-              <p className="text-muted-foreground whitespace-pre-wrap">{program.design_risks}</p>
-            </Card>
-          )}
-          {program.design_evaluation_plan && (
-            <Card className="p-6">
-              <h3 className="font-semibold mb-2">Evaluation Plan</h3>
-              <p className="text-muted-foreground whitespace-pre-wrap">{program.design_evaluation_plan}</p>
-            </Card>
-          )}
-          {!program.design_vision && !program.design_target_population && (program.design_goals || []).length === 0 && (
-            <Card className="p-8 text-center text-muted-foreground">No design details yet. Click "Edit Program" to fill in the design plan.</Card>
-          )}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">Step through the program design process below, or open the guided wizard.</p>
+            <Button onClick={() => setDesignWizard(true)} className="gap-2">
+              <Lightbulb className="w-4 h-4" /> Open Design Wizard
+            </Button>
+          </div>
+
+          {/* Design summary — each section as a card with completion indicator */}
+          {[
+            { label: 'Needs Assessment', value: program.needs_assessment, icon: '🔍' },
+            { label: 'Target Population', value: program.design_target_population, icon: '👥' },
+            { label: 'Vision & Theory of Change', value: program.design_vision, icon: '💡' },
+            { label: 'Goals & Outcomes', value: (program.design_goals || []).join('\n'), isList: program.design_goals, icon: '🎯' },
+            { label: 'Resources & Capacity', value: program.design_resources_needed, icon: '📦' },
+            { label: 'Implementation Plan', value: null, isSteps: true, icon: '🗂️' },
+            { label: 'Risk & Sustainability', value: program.design_risks, icon: '⚠️' },
+            { label: 'Evaluation Plan', value: program.design_evaluation_plan, icon: '📊' },
+          ].map((section, i) => {
+            const hasContent = section.isSteps
+              ? (program.design_implementation_steps || []).length > 0
+              : section.isList
+                ? section.isList.length > 0
+                : !!section.value;
+            return (
+              <Card key={i} className={`p-5 ${hasContent ? '' : 'opacity-60'}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-sm flex items-center gap-2">
+                    <span>{section.icon}</span> Step {i + 1}: {section.label}
+                  </h3>
+                  {hasContent
+                    ? <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    : <Circle className="w-4 h-4 text-muted-foreground" />}
+                </div>
+                {hasContent ? (
+                  section.isSteps ? (
+                    <div className="space-y-1">
+                      {program.design_implementation_steps.map((s, si) => (
+                        <div key={si} className="flex items-center gap-2 text-sm">
+                          <button onClick={() => toggleDesignStep(si)}>
+                            {s.done ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Circle className="w-4 h-4 text-muted-foreground" />}
+                          </button>
+                          <span className={s.done ? 'line-through text-muted-foreground' : ''}>{s.step}</span>
+                          {s.owner && <span className="text-xs text-muted-foreground ml-auto">{s.owner}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  ) : section.isList ? (
+                    <ul className="space-y-1">
+                      {section.isList.map((g, gi) => (
+                        <li key={gi} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle2 className="w-3 h-3 text-green-500 mt-1 flex-shrink-0" />{g}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-3">{section.value}</p>
+                  )
+                ) : (
+                  <p className="text-xs text-muted-foreground italic">Not completed — open the Design Wizard to fill this in.</p>
+                )}
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
