@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useRoutes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -59,11 +59,6 @@ const AuthenticatedApp = () => {
         <Route path="/guest-list" element={<GuestList />} />
         <Route path="/submissions" element={<EventSubmissions />} />
       </Route>
-      {/* Public Portal - outside MainLayout (no sidebar) */}
-      <Route path="/portal" element={<EventPortal />} />
-      <Route path="/portal/events/:id" element={<EventPortalDetail />} />
-      <Route path="/portal/submit" element={<SubmitEvent />} />
-      <Route path="/portal/order-success" element={<OrderSuccess />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
@@ -76,7 +71,15 @@ function App() {
     <Router>
       <AuthProvider>
         <QueryClientProvider client={queryClientInstance}>
-          <AuthenticatedApp />
+          <Routes>
+            {/* Public Portal routes - no auth required */}
+            <Route path="/portal" element={<EventPortal />} />
+            <Route path="/portal/events/:id" element={<EventPortalDetail />} />
+            <Route path="/portal/submit" element={<SubmitEvent />} />
+            <Route path="/portal/order-success" element={<OrderSuccess />} />
+            {/* All other routes require auth */}
+            <Route path="*" element={<AuthenticatedApp />} />
+          </Routes>
           <Toaster />
         </QueryClientProvider>
       </AuthProvider>
