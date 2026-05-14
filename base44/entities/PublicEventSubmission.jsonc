@@ -1,0 +1,114 @@
+{
+  "name": "PublicEventSubmission",
+  "type": "object",
+  "properties": {
+    "submitter_name": {
+      "type": "string",
+      "description": "Name of person submitting"
+    },
+    "submitter_email": {
+      "type": "string",
+      "description": "Submitter email"
+    },
+    "organization_name": {
+      "type": "string",
+      "description": "Organization or company name"
+    },
+    "organization_type": {
+      "type": "string",
+      "enum": [
+        "nonprofit",
+        "business",
+        "government",
+        "individual",
+        "other"
+      ],
+      "description": "Type of submitting organization"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Event name"
+    },
+    "event_description": {
+      "type": "string",
+      "description": "Full event description"
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Type of event"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event start date and time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event end date and time"
+    },
+    "location": {
+      "type": "string",
+      "description": "Event location"
+    },
+    "expected_attendance": {
+      "type": "number",
+      "description": "Expected number of attendees"
+    },
+    "ticket_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Proposed ticket tiers"
+    },
+    "agreed_to_fee_structure": {
+      "type": "boolean",
+      "default": false,
+      "description": "Submitter agreed to platform fee structure"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "needs_revision"
+      ],
+      "default": "pending",
+      "description": "Review status"
+    },
+    "linked_event_id": {
+      "type": "string",
+      "description": "If approved, the created Event ID"
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Internal admin notes or rejection reason"
+    },
+    "website": {
+      "type": "string",
+      "description": "Submitter or org website"
+    }
+  },
+  "required": [
+    "submitter_name",
+    "submitter_email",
+    "event_name",
+    "start_date"
+  ]
+}

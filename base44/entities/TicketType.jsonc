@@ -1,0 +1,56 @@
+{
+  "name": "TicketType",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Associated event ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "Ticket tier name (e.g. General Admission, VIP)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Ticket description"
+    },
+    "price": {
+      "type": "number",
+      "description": "Ticket price in USD"
+    },
+    "quantity_total": {
+      "type": "number",
+      "description": "Total tickets available"
+    },
+    "quantity_sold": {
+      "type": "number",
+      "default": 0,
+      "description": "Tickets sold so far"
+    },
+    "is_free": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is this a free ticket?"
+    },
+    "sale_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When ticket sales start"
+    },
+    "sale_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When ticket sales end"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Is this ticket type available?"
+    }
+  },
+  "required": [
+    "event_id",
+    "name",
+    "price"
+  ]
+}

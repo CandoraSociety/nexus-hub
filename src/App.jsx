@@ -15,6 +15,11 @@ import ProgramDetail from '@/pages/ProgramDetail';
 import EventDetail from '@/pages/EventDetail';
 import GuestList from '@/pages/GuestList';
 import EventsCalendar from '@/pages/EventsCalendar';
+import EventSubmissions from '@/pages/EventSubmissions';
+import EventPortal from '@/pages/portal/EventPortal';
+import EventPortalDetail from '@/pages/portal/EventPortalDetail';
+import SubmitEvent from '@/pages/portal/SubmitEvent';
+import OrderSuccess from '@/pages/portal/OrderSuccess';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -52,7 +57,13 @@ const AuthenticatedApp = () => {
         <Route path="/events/:id" element={<EventDetail />} />
         <Route path="/events-calendar" element={<EventsCalendar />} />
         <Route path="/guest-list" element={<GuestList />} />
+        <Route path="/submissions" element={<EventSubmissions />} />
       </Route>
+      {/* Public Portal - outside MainLayout (no sidebar) */}
+      <Route path="/portal" element={<EventPortal />} />
+      <Route path="/portal/events/:id" element={<EventPortalDetail />} />
+      <Route path="/portal/submit" element={<SubmitEvent />} />
+      <Route path="/portal/order-success" element={<OrderSuccess />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

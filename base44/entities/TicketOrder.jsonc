@@ -1,0 +1,76 @@
+{
+  "name": "TicketOrder",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Associated event ID"
+    },
+    "ticket_type_id": {
+      "type": "string",
+      "description": "Ticket type purchased"
+    },
+    "buyer_name": {
+      "type": "string",
+      "description": "Buyer full name"
+    },
+    "buyer_email": {
+      "type": "string",
+      "description": "Buyer email address"
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Number of tickets purchased"
+    },
+    "unit_price": {
+      "type": "number",
+      "description": "Price per ticket at time of purchase"
+    },
+    "platform_fee_percent": {
+      "type": "number",
+      "description": "Platform fee percentage applied"
+    },
+    "platform_fee_flat": {
+      "type": "number",
+      "description": "Platform flat fee per ticket applied"
+    },
+    "total_amount": {
+      "type": "number",
+      "description": "Total charged to buyer (including fees)"
+    },
+    "platform_revenue": {
+      "type": "number",
+      "description": "Total platform fee revenue from this order"
+    },
+    "stripe_session_id": {
+      "type": "string",
+      "description": "Stripe checkout session ID"
+    },
+    "stripe_payment_intent_id": {
+      "type": "string",
+      "description": "Stripe payment intent ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid",
+        "cancelled",
+        "refunded"
+      ],
+      "default": "pending",
+      "description": "Order status"
+    },
+    "confirmation_code": {
+      "type": "string",
+      "description": "Unique confirmation code for attendee"
+    }
+  },
+  "required": [
+    "event_id",
+    "ticket_type_id",
+    "buyer_name",
+    "buyer_email",
+    "quantity"
+  ]
+}

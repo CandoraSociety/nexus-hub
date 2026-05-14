@@ -319,6 +319,47 @@
         "type": "string"
       },
       "description": "Tags for organization"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": false,
+      "description": "Show this event on the public portal"
+    },
+    "is_ticketed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Does this event sell tickets?"
+    },
+    "organizer_name": {
+      "type": "string",
+      "description": "Public-facing organizer name"
+    },
+    "organizer_email": {
+      "type": "string",
+      "description": "Public-facing organizer contact email"
+    },
+    "cover_image_url": {
+      "type": "string",
+      "description": "Cover image for public portal"
+    },
+    "platform_fee_percent": {
+      "type": "number",
+      "default": 5,
+      "description": "Platform fee percentage on ticket sales"
+    },
+    "platform_fee_flat": {
+      "type": "number",
+      "default": 1.5,
+      "description": "Platform flat fee per ticket (USD)"
+    },
+    "is_external": {
+      "type": "boolean",
+      "default": false,
+      "description": "Event submitted by external org (not internal)"
+    },
+    "submission_id": {
+      "type": "string",
+      "description": "Linked PublicEventSubmission ID if externally submitted"
     }
   },
   "required": [

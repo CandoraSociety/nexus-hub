@@ -1,0 +1,298 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
+import { ArrowLeft, Plus, Trash2, CheckCircle, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+const PLATFORM_FEE_PERCENT = 5;
+const PLATFORM_FEE_FLAT = 1.50;
+
+export default function SubmitEvent() {
+  const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState("");
+
+  const [form, setForm] = useState({
+    submitter_name: "",
+    submitter_email: "",
+    organization_name: "",
+    organization_type: "business",
+    website: "",
+    event_name: "",
+    event_description: "",
+    event_type: "",
+    start_date: "",
+    end_date: "",
+    location: "",
+    expected_attendance: "",
+    ticket_tiers: [],
+    agreed_to_fee_structure: false
+  });
+
+  const update = (field, value) => setForm(f => ({ ...f, [field]: value }));
+
+  const addTier = () => {
+    setForm(f => ({
+      ...f,
+      ticket_tiers: [...f.ticket_tiers, { name: "", price: "", quantity: "", description: "" }]
+    }));
+  };
+
+  const updateTier = (i, field, value) => {
+    setForm(f => {
+      const tiers = [...f.ticket_tiers];
+      tiers[i] = { ...tiers[i], [field]: value };
+      return { ...f, ticket_tiers: tiers };
+    });
+  };
+
+  const removeTier = (i) => {
+    setForm(f => ({ ...f, ticket_tiers: f.ticket_tiers.filter((_, idx) => idx !== i) }));
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    const payload = {
+      ...form,
+      expected_attendance: form.expected_attendance ? Number(form.expected_attendance) : undefined,
+      ticket_tiers: form.ticket_tiers.map(t => ({
+        ...t,
+        price: Number(t.price),
+        quantity: Number(t.quantity)
+      }))
+    };
+    const res = await base44.functions.invoke("submitPublicEvent", payload);
+    if (res.data.success) {
+      setSubmissionId(res.data.submission_id);
+      setSubmitted(true);
+    }
+    setSubmitting(false);
+  };
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-amber-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl p-10 max-w-md w-full text-center shadow-sm">
+          <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Submission Received!</h2>
+          <p className="text-gray-500 mb-4">
+            Thank you! We'll review your event and respond within 2–3 business days. Check your email for confirmation.
+          </p>
+          <p className="text-xs text-gray-400 mb-6">Submission ID: {submissionId}</p>
+          <Link to="/portal">
+            <Button className="bg-amber-500 hover:bg-amber-600 text-white">Back to Events Portal</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-amber-50">
+      <div className="bg-white border-b border-gray-100 px-4 py-3">
+        <div className="max-w-2xl mx-auto">
+          <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-amber-600">
+            <ArrowLeft className="w-4 h-4" /> Back to Events
+          </Link>
+        </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Submit Your Event</h1>
+          <p className="text-gray-500">List your event on our community portal and sell tickets through our platform.</p>
+        </div>
+
+        {/* Step indicator */}
+        <div className="flex items-center gap-3 mb-8">
+          {[1, 2, 3].map(s => (
+            <div key={s} className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                step >= s ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-400"
+              }`}>{s}</div>
+              {s < 3 && <div className={`h-0.5 w-8 ${step > s ? "bg-amber-400" : "bg-gray-200"}`} />}
+            </div>
+          ))}
+          <div className="ml-2 text-sm text-gray-500">
+            {step === 1 && "Your Info"}{step === 2 && "Event Details"}{step === 3 && "Tickets & Fees"}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          {step === 1 && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-800 mb-4">Your Organization</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Your Name *</label>
+                  <Input value={form.submitter_name} onChange={e => update("submitter_name", e.target.value)} placeholder="Full name" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Email *</label>
+                  <Input type="email" value={form.submitter_email} onChange={e => update("submitter_email", e.target.value)} placeholder="you@org.com" />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Organization Name</label>
+                <Input value={form.organization_name} onChange={e => update("organization_name", e.target.value)} placeholder="Your org or company" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Organization Type</label>
+                  <select
+                    value={form.organization_type}
+                    onChange={e => update("organization_type", e.target.value)}
+                    className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                  >
+                    <option value="nonprofit">Nonprofit</option>
+                    <option value="business">Business</option>
+                    <option value="government">Government</option>
+                    <option value="individual">Individual</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Website</label>
+                  <Input value={form.website} onChange={e => update("website", e.target.value)} placeholder="https://..." />
+                </div>
+              </div>
+              <div className="flex justify-end pt-2">
+                <Button
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  onClick={() => setStep(2)}
+                  disabled={!form.submitter_name || !form.submitter_email}
+                >
+                  Next: Event Details
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-800 mb-4">Event Details</h2>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Event Name *</label>
+                <Input value={form.event_name} onChange={e => update("event_name", e.target.value)} placeholder="Name your event" />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Description</label>
+                <textarea
+                  value={form.event_description}
+                  onChange={e => update("event_description", e.target.value)}
+                  placeholder="Tell people what your event is about..."
+                  rows={4}
+                  className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm resize-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Start Date & Time *</label>
+                  <Input type="datetime-local" value={form.start_date} onChange={e => update("start_date", e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">End Date & Time</label>
+                  <Input type="datetime-local" value={form.end_date} onChange={e => update("end_date", e.target.value)} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Location</label>
+                  <Input value={form.location} onChange={e => update("location", e.target.value)} placeholder="Address or 'Online'" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Expected Attendance</label>
+                  <Input type="number" value={form.expected_attendance} onChange={e => update("expected_attendance", e.target.value)} placeholder="Approx. number" />
+                </div>
+              </div>
+              <div className="flex justify-between pt-2">
+                <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
+                <Button
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  onClick={() => setStep(3)}
+                  disabled={!form.event_name || !form.start_date}
+                >
+                  Next: Tickets & Fees
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-800 mb-1">Ticket Tiers</h2>
+              <p className="text-sm text-gray-500 mb-4">Add ticket types (e.g. General, VIP). Leave empty for a free event.</p>
+
+              {form.ticket_tiers.map((tier, i) => (
+                <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Ticket Tier {i + 1}</span>
+                    <button onClick={() => removeTier(i)} className="text-red-400 hover:text-red-600">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-xs text-gray-500 mb-1 block">Name</label>
+                      <Input value={tier.name} onChange={e => updateTier(i, "name", e.target.value)} placeholder="General" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 mb-1 block">Price ($)</label>
+                      <Input type="number" value={tier.price} onChange={e => updateTier(i, "price", e.target.value)} placeholder="0.00" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 mb-1 block">Quantity</label>
+                      <Input type="number" value={tier.quantity} onChange={e => updateTier(i, "quantity", e.target.value)} placeholder="100" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">Description (optional)</label>
+                    <Input value={tier.description} onChange={e => updateTier(i, "description", e.target.value)} placeholder="What's included?" />
+                  </div>
+                </div>
+              ))}
+
+              <Button variant="outline" onClick={addTier} className="w-full border-dashed">
+                <Plus className="w-4 h-4 mr-2" /> Add Ticket Tier
+              </Button>
+
+              {/* Fee disclosure */}
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-2">
+                <h3 className="font-medium text-amber-800 mb-2">Platform Fee Structure</h3>
+                <p className="text-sm text-amber-700">
+                  For each ticket sold through our portal, a service fee of <strong>{PLATFORM_FEE_PERCENT}% + ${PLATFORM_FEE_FLAT.toFixed(2)}/ticket</strong> will be added to the buyer's total. These fees are collected by the platform and do not come out of your revenue.
+                </p>
+              </div>
+
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.agreed_to_fee_structure}
+                  onChange={e => update("agreed_to_fee_structure", e.target.checked)}
+                  className="mt-0.5"
+                />
+                <span className="text-sm text-gray-600">
+                  I understand and agree to the platform fee structure described above.
+                </span>
+              </label>
+
+              <div className="flex justify-between pt-2">
+                <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
+                <Button
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  onClick={handleSubmit}
+                  disabled={submitting || !form.agreed_to_fee_structure}
+                >
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                  {submitting ? "Submitting..." : "Submit Event for Review"}
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
