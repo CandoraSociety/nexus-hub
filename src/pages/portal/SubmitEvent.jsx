@@ -20,6 +20,12 @@ export default function SubmitEvent() {
     organization_name: "",
     organization_type: "business",
     website: "",
+    billing_name: "",
+    billing_address: "",
+    billing_city: "",
+    billing_state: "",
+    billing_zip: "",
+    billing_country: "US",
     event_name: "",
     event_description: "",
     event_type: "",
@@ -107,16 +113,19 @@ export default function SubmitEvent() {
 
         {/* Step indicator */}
         <div className="flex items-center gap-3 mb-8">
-          {[1, 2, 3].map(s => (
+          {[1, 2, 3, 4].map(s => (
             <div key={s} className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                 step >= s ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-400"
               }`}>{s}</div>
-              {s < 3 && <div className={`h-0.5 w-8 ${step > s ? "bg-amber-400" : "bg-gray-200"}`} />}
+              {s < 4 && <div className={`h-0.5 w-8 ${step > s ? "bg-amber-400" : "bg-gray-200"}`} />}
             </div>
           ))}
           <div className="ml-2 text-sm text-gray-500">
-            {step === 1 && "Your Info"}{step === 2 && "Event Details"}{step === 3 && "Tickets & Fees"}
+            {step === 1 && "Your Info"}
+            {step === 2 && "Billing Info"}
+            {step === 3 && "Event Details"}
+            {step === 4 && "Tickets & Fees"}
           </div>
         </div>
 
@@ -164,13 +173,56 @@ export default function SubmitEvent() {
                   onClick={() => setStep(2)}
                   disabled={!form.submitter_name || !form.submitter_email}
                 >
-                  Next: Event Details
+                  Next: Billing Info
                 </Button>
               </div>
             </div>
           )}
 
           {step === 2 && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-800 mb-1">Billing Information</h2>
+              <p className="text-sm text-gray-500 mb-4">Used for invoicing platform fees and receipts. Card details are collected securely at checkout.</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Billing Name *</label>
+                  <Input value={form.billing_name} onChange={e => update("billing_name", e.target.value)} placeholder="Name on account or organization" />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Billing Address</label>
+                  <Input value={form.billing_address} onChange={e => update("billing_address", e.target.value)} placeholder="Street address" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">City</label>
+                  <Input value={form.billing_city} onChange={e => update("billing_city", e.target.value)} placeholder="City" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">State / Province</label>
+                  <Input value={form.billing_state} onChange={e => update("billing_state", e.target.value)} placeholder="State" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">ZIP / Postal Code</label>
+                  <Input value={form.billing_zip} onChange={e => update("billing_zip", e.target.value)} placeholder="ZIP" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Country</label>
+                  <Input value={form.billing_country} onChange={e => update("billing_country", e.target.value)} placeholder="Country" />
+                </div>
+              </div>
+              <div className="flex justify-between pt-2">
+                <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
+                <Button
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  onClick={() => setStep(3)}
+                  disabled={!form.billing_name}
+                >
+                  Next: Event Details
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
             <div className="space-y-4">
               <h2 className="font-semibold text-gray-800 mb-4">Event Details</h2>
               <div>
@@ -208,10 +260,10 @@ export default function SubmitEvent() {
                 </div>
               </div>
               <div className="flex justify-between pt-2">
-                <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
+                <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
                 <Button
                   className="bg-amber-500 hover:bg-amber-600 text-white"
-                  onClick={() => setStep(3)}
+                  onClick={() => setStep(4)}
                   disabled={!form.event_name || !form.start_date}
                 >
                   Next: Tickets & Fees
@@ -220,7 +272,7 @@ export default function SubmitEvent() {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div className="space-y-4">
               <h2 className="font-semibold text-gray-800 mb-1">Ticket Tiers</h2>
               <p className="text-sm text-gray-500 mb-4">Add ticket types (e.g. General, VIP). Leave empty for a free event.</p>
@@ -279,7 +331,7 @@ export default function SubmitEvent() {
               </label>
 
               <div className="flex justify-between pt-2">
-                <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
+                <Button variant="outline" onClick={() => setStep(3)}>Back</Button>
                 <Button
                   className="bg-amber-500 hover:bg-amber-600 text-white"
                   onClick={handleSubmit}
