@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import SupportChatWidget from "@/components/portal/SupportChatWidget";
 import { CheckCircle, Ticket, Calendar, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -42,6 +43,7 @@ export default function OrderSuccess() {
           </Button>
         </Link>
       </div>
+      <SupportChatWidget />
     </div>
   );
 }

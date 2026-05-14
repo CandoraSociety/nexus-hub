@@ -6,6 +6,7 @@ import { MapPin, Calendar, Clock, ArrowLeft, Ticket, Users, Globe, ChevronDown, 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import TicketCheckoutModal from "@/components/portal/TicketCheckoutModal";
+import SupportChatWidget from "@/components/portal/SupportChatWidget";
 
 export default function EventPortalDetail() {
   const { id } = useParams();
@@ -192,6 +193,8 @@ export default function EventPortalDetail() {
           </div>
         </div>
       </div>
+
+      <SupportChatWidget />
 
       {showCheckout && selectedTicket && (
         <TicketCheckoutModal

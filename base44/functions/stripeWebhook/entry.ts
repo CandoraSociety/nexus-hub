@@ -42,6 +42,14 @@ Deno.serve(async (req) => {
           }
         }
 
+        // Send QR ticket confirmation email
+        try {
+          await base44.asServiceRole.functions.invoke('sendTicketConfirmation', { order_id: orderId });
+          console.log(`Ticket confirmation email sent for order ${orderId}`);
+        } catch (emailErr) {
+          console.error('Failed to send ticket confirmation email:', emailErr.message);
+        }
+
         console.log(`Order ${orderId} marked as paid. Confirmation: ${confirmationCode}`);
       }
     }
