@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Filter, Search, Archive } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import ProgramForm from '@/components/programs/ProgramForm';
+import AddProgramModal from '@/components/programs/AddProgramModal';
 import { Link } from 'react-router-dom';
 
 export default function Programs() {
+  const [showModal, setShowModal] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [programMode, setProgramMode] = useState('existing');
   const [editingProgram, setEditingProgram] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const queryClient = useQueryClient();
@@ -29,13 +32,19 @@ export default function Programs() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data) => base44.entities.Program.update(data.id, data),
+    mutationFn: ({ id, ...data }) => base44.entities.Program.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       setShowForm(false);
       setEditingProgram(null);
     },
   });
+
+  const handleModeChoice = (mode) => {
+    setProgramMode(mode);
+    setShowModal(false);
+    setShowForm(true);
+  };
 
   const filtered = programs.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,15 +71,24 @@ export default function Programs() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-heading font-bold">Programs</h1>
-        <Button onClick={() => setShowForm(true)} className="gap-2">
-          <Plus className="w-4 h-4" /> New Program
+        <Button onClick={() => setShowModal(true)} className="gap-2">
+          <Plus className="w-4 h-4" /> Add / Design Program
         </Button>
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <AddProgramModal
+          onChoice={handleModeChoice}
+          onCancel={() => setShowModal(false)}
+        />
+      )}
 
       {/* Form */}
       {showForm && (
         <ProgramForm
           program={editingProgram}
+          mode={programMode}
           onSubmit={(data) => {
             if (editingProgram) {
               updateMutation.mutate({ id: editingProgram.id, ...data });
