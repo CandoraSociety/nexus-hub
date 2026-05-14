@@ -10,8 +10,9 @@ import Dashboard from '@/pages/Dashboard';
 import Programs from '@/pages/Programs';
 import Projects from '@/pages/Projects';
 import ProjectDetail from '@/pages/ProjectDetail';
-import Events from '@/pages/Events';
+import Events from '@/pages/Events.jsx';
 import ProgramDetail from '@/pages/ProgramDetail';
+import EventDetail from '@/pages/EventDetail';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -46,6 +47,7 @@ const AuthenticatedApp = () => {
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />
         <Route path="/events" element={<Events />} />
+        <Route path="/events/:id" element={<EventDetail />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

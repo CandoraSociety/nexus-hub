@@ -8,9 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, X, Edit2, Save, CheckCircle2, Circle, AlertTriangle, TrendingUp, ClipboardList, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Plus, X, Edit2, Save, CheckCircle2, Circle, AlertTriangle, TrendingUp, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProgramForm from '@/components/programs/ProgramForm';
 import ProgramDesignWizard from '@/components/programs/ProgramDesignWizard';
+import ExistingProgramStepNav, { EXISTING_PROGRAM_STEPS } from '@/components/programs/ExistingProgramStepNav';
 
 const severityColors = {
   low: 'bg-yellow-100 text-yellow-800',
@@ -123,13 +124,14 @@ export default function ProgramDetail() {
 
   const statusColors = { planning: 'bg-yellow-100 text-yellow-800', active: 'bg-green-100 text-green-800', paused: 'bg-orange-100 text-orange-800', archived: 'bg-gray-100 text-gray-800' };
 
-  const tabs = [
+  const existingSteps = EXISTING_PROGRAM_STEPS;
+  const currentExistingIdx = existingSteps.findIndex(s => s.id === activeTab);
+  const prevExistingStep = currentExistingIdx > 0 ? existingSteps[currentExistingIdx - 1] : null;
+  const nextExistingStep = currentExistingIdx < existingSteps.length - 1 ? existingSteps[currentExistingIdx + 1] : null;
+
+  const designTabs = [
     { id: 'overview', label: 'Overview' },
-    ...(isDesign ? [{ id: 'design', label: 'Program Design' }] : [
-      { id: 'metrics', label: 'Metrics' },
-      { id: 'gaps', label: 'Gaps & Deficiencies' },
-      { id: 'improvements', label: 'Improvement Plans' },
-    ]),
+    { id: 'design', label: 'Program Design' },
   ];
 
   // Design wizard save
@@ -202,22 +204,40 @@ export default function ProgramDetail() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 border-b border-border">
-        {tabs.map(t => (
-          <button
-            key={t.id}
-            onClick={() => setActiveTab(t.id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === t.id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      {/* Navigation: step nav for existing, tabs for design */}
+      {!isDesign ? (
+        <div>
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-lg font-heading font-bold">Program Information</h2>
+            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+              Step {currentExistingIdx + 1} of {existingSteps.length}
+            </span>
+          </div>
+          <ExistingProgramStepNav activeTab={activeTab} onTabChange={setActiveTab} program={program} />
+        </div>
+      ) : (
+        <div className="flex gap-1 border-b border-border">
+          {designTabs.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === t.id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Overview Tab */}
       {activeTab === 'overview' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {!isDesign && (
+            <Card className="p-4 bg-secondary/5 border-secondary/20 md:col-span-2">
+              <p className="text-sm font-medium text-secondary">📋 Step 1: Overview</p>
+              <p className="text-xs text-muted-foreground mt-1">Ensure the program name, description, origin date, and key details are fully documented. This is your single source of truth for the program.</p>
+            </Card>
+          )}
           <Card className="p-6 md:col-span-2">
             <h3 className="font-semibold mb-2">Description</h3>
             <p className="text-muted-foreground">{program.description || 'No description added.'}</p>
@@ -235,7 +255,9 @@ export default function ProgramDetail() {
               <p className="text-xs text-muted-foreground uppercase tracking-wide">
                 {isDesign ? 'Planned End' : program.status === 'paused' ? 'Date Paused' : 'Date Ended'}
               </p>
-              <p className="text-lg font-semibold mt-1">{program.end_date}</p>
+              <p className="text-lg font-semibold mt-1">
+                {program.end_date === 'ongoing' ? '♾ Ongoing' : program.end_date}
+              </p>
             </Card>
           )}
           {program.budget && (
@@ -256,6 +278,10 @@ export default function ProgramDetail() {
       {/* Metrics Tab */}
       {activeTab === 'metrics' && (
         <div className="space-y-4">
+          <Card className="p-4 bg-secondary/5 border-secondary/20">
+            <p className="text-sm font-medium text-secondary">📊 Step 2: Metrics</p>
+            <p className="text-xs text-muted-foreground mt-1">Define SMART metrics tied to your program's goals. Track both output metrics (# served) and outcome metrics (% improved). Regular measurement drives continuous quality improvement (CQI).</p>
+          </Card>
           <div className="flex justify-between items-center">
             <p className="text-muted-foreground text-sm">Track program-specific performance metrics</p>
           </div>
@@ -309,6 +335,10 @@ export default function ProgramDetail() {
       {/* Gaps Tab */}
       {activeTab === 'gaps' && (
         <div className="space-y-4">
+          <Card className="p-4 bg-secondary/5 border-secondary/20">
+            <p className="text-sm font-medium text-secondary">⚠️ Step 3: Gaps & Deficiencies</p>
+            <p className="text-xs text-muted-foreground mt-1">Honestly documenting gaps is essential for program improvement. Rate severity, assign ownership, and track resolution. Unaddressed gaps become risks.</p>
+          </Card>
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground">Document gaps, deficiencies, and areas needing attention</p>
             <Button onClick={() => setShowGapForm(true)} className="gap-2" size="sm"><Plus className="w-4 h-4" /> Add Gap</Button>
@@ -375,6 +405,10 @@ export default function ProgramDetail() {
       {/* Improvement Plans Tab */}
       {activeTab === 'improvements' && (
         <div className="space-y-4">
+          <Card className="p-4 bg-secondary/5 border-secondary/20">
+            <p className="text-sm font-medium text-secondary">📈 Step 4: Improvement Plans</p>
+            <p className="text-xs text-muted-foreground mt-1">For each identified gap, create a concrete improvement plan with clear ownership and timelines. This closes the CQI loop: identify → plan → act → evaluate.</p>
+          </Card>
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground">Track program improvement initiatives and corrective action plans</p>
             <Button onClick={() => setShowPlanForm(true)} className="gap-2" size="sm"><Plus className="w-4 h-4" /> Add Plan</Button>
@@ -432,6 +466,27 @@ export default function ProgramDetail() {
               </Card>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Prev/Next for existing programs */}
+      {!isDesign && (
+        <div className="flex justify-between items-center pt-4 border-t border-border">
+          <Button
+            variant="outline"
+            onClick={() => prevExistingStep && setActiveTab(prevExistingStep.id)}
+            disabled={!prevExistingStep}
+            className="gap-2"
+          >
+            <ChevronLeft className="w-4 h-4" /> {prevExistingStep ? prevExistingStep.label : 'Start'}
+          </Button>
+          <Button
+            onClick={() => nextExistingStep && setActiveTab(nextExistingStep.id)}
+            disabled={!nextExistingStep}
+            className="gap-2"
+          >
+            {nextExistingStep ? nextExistingStep.label : 'Done'} <ChevronRight className="w-4 h-4" />
+          </Button>
         </div>
       )}
 

@@ -129,11 +129,33 @@ export default function ProgramForm({ program, mode = 'existing', onSubmit, onCa
                 <label className="text-xs text-muted-foreground font-medium">
                   {effectiveMode === 'existing' ? (data.status === 'paused' ? 'Date Paused' : 'Date Ended / Archived') : 'Planned End Date'}
                 </label>
-                <Input
-                  type="date"
-                  value={data.end_date}
-                  onChange={(e) => setData({ ...data, end_date: e.target.value })}
-                />
+                {effectiveMode === 'design' ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="ongoing-check"
+                        checked={data.end_date === 'ongoing'}
+                        onChange={(e) => setData({ ...data, end_date: e.target.checked ? 'ongoing' : '' })}
+                        className="rounded"
+                      />
+                      <label htmlFor="ongoing-check" className="text-sm text-muted-foreground">Ongoing (no fixed end date)</label>
+                    </div>
+                    {data.end_date !== 'ongoing' && (
+                      <Input
+                        type="date"
+                        value={data.end_date}
+                        onChange={(e) => setData({ ...data, end_date: e.target.value })}
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <Input
+                    type="date"
+                    value={data.end_date}
+                    onChange={(e) => setData({ ...data, end_date: e.target.value })}
+                  />
+                )}
               </div>
             )}
             <Input

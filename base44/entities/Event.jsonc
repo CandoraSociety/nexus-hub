@@ -10,6 +10,15 @@
       "type": "string",
       "description": "Event description"
     },
+    "event_mode": {
+      "type": "string",
+      "enum": [
+        "existing",
+        "new"
+      ],
+      "default": "existing",
+      "description": "Whether this is an existing/recurring event or a newly planned one"
+    },
     "event_type": {
       "type": "string",
       "enum": [
