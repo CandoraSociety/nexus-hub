@@ -1,0 +1,81 @@
+{
+  "name": "Contact",
+  "type": "object",
+  "properties": {
+    "first_name": {
+      "type": "string",
+      "description": "First name"
+    },
+    "last_name": {
+      "type": "string",
+      "description": "Last name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "organization": {
+      "type": "string",
+      "description": "Organization or employer"
+    },
+    "title": {
+      "type": "string",
+      "description": "Job title or role"
+    },
+    "address": {
+      "type": "string",
+      "description": "Mailing address"
+    },
+    "city": {
+      "type": "string",
+      "description": "City"
+    },
+    "state": {
+      "type": "string",
+      "description": "State"
+    },
+    "zip": {
+      "type": "string",
+      "description": "ZIP code"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Labels like 'donor', 'volunteer', 'board member', 'community partner', etc."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "import",
+        "event_rsvp",
+        "portal"
+      ],
+      "default": "manual",
+      "description": "How this contact was added"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes about this contact"
+    },
+    "is_subscribed": {
+      "type": "boolean",
+      "default": true,
+      "description": "Opted in to email communications"
+    },
+    "event_history": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of events this contact has attended or been invited to"
+    }
+  },
+  "required": []
+}
