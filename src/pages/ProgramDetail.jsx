@@ -61,6 +61,7 @@ export default function ProgramDetail() {
       queryClient.invalidateQueries({ queryKey: ['program', id] });
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       setEditing(false);
+      setDesignWizard(false);
     },
   });
 

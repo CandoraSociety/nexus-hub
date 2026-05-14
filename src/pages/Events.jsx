@@ -41,9 +41,9 @@ export default function Events() {
     e.location?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleCreate = (eventData) => {
-    createMutation.mutate(eventData);
+  const handleChoice = (mode) => {
     setShowModal(false);
+    createMutation.mutate({ name: 'New Event', start_date: new Date().toISOString(), event_mode: mode });
   };
 
   return (
@@ -118,8 +118,8 @@ export default function Events() {
 
       {showModal && (
         <AddEventModal
-          onClose={() => setShowModal(false)}
-          onCreate={handleCreate}
+          onChoice={handleChoice}
+          onCancel={() => setShowModal(false)}
         />
       )}
     </div>
