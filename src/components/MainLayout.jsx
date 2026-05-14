@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Briefcase, Zap, Calendar, CalendarDays, Users, BookOpen, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Briefcase, Zap, Calendar, BookOpen, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/AuthContext';
@@ -15,8 +15,6 @@ export default function MainLayout() {
     { path: '/programs', label: 'Programs', icon: Briefcase },
     { path: '/projects', label: 'Projects', icon: Zap },
     { path: '/events', label: 'Events', icon: Calendar },
-    { path: '/events-calendar', label: 'Calendar', icon: CalendarDays },
-    { path: '/guest-list', label: 'Guest List', icon: Users },
     { path: '/learning', label: 'Learning', icon: BookOpen },
   ];
 

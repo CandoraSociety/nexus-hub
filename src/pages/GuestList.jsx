@@ -20,7 +20,7 @@ const TAG_COLORS = {
   staff: 'bg-gray-100 text-gray-800',
 };
 
-export default function GuestList() {
+export default function GuestList({ embedded = false }) {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [filterTag, setFilterTag] = useState('all');
@@ -126,10 +126,13 @@ export default function GuestList() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-3xl font-heading font-bold">Master Guest List</h1>
-          <p className="text-muted-foreground text-sm mt-1">{contacts.length} contacts total</p>
-        </div>
+        {!embedded && (
+          <div>
+            <h1 className="text-3xl font-heading font-bold">Master Guest List</h1>
+            <p className="text-muted-foreground text-sm mt-1">{contacts.length} contacts total</p>
+          </div>
+        )}
+        {embedded && <p className="text-muted-foreground text-sm">{contacts.length} contacts total</p>}
         <div className="flex gap-2 flex-wrap">
           <Button variant="outline" onClick={() => setShowImport(true)} className="gap-2">
             <Upload className="w-4 h-4" /> Import Excel

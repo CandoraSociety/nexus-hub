@@ -26,7 +26,7 @@ const DOT_COLORS = {
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-export default function EventsCalendar() {
+export default function EventsCalendar({ embedded = false }) {
   const navigate = useNavigate();
   const today = new Date();
   const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -93,20 +93,19 @@ export default function EventsCalendar() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-heading font-bold">Events Calendar</h1>
-          <p className="text-muted-foreground text-sm mt-1">{events.length} events total</p>
+      {!embedded && (
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-heading font-bold">Events Calendar</h1>
+            <p className="text-muted-foreground text-sm mt-1">{events.length} events total</p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={() => navigate('/events')} className="gap-2">
+              <Plus className="w-4 h-4" /> Add Event
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate('/events')} className="gap-2">
-            <Calendar className="w-4 h-4" /> List View
-          </Button>
-          <Button onClick={() => navigate('/events')} className="gap-2">
-            <Plus className="w-4 h-4" /> Add Event
-          </Button>
-        </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar */}
