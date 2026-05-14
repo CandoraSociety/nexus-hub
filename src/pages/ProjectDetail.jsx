@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, LayoutList, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import TaskList from '@/components/projects/TaskList';
+import { TaskKanban } from '@/components/projects/ProjectKanban';
 import ProjectCharterTab from '@/components/projects/ProjectCharterTab';
 import ProjectScopeTab from '@/components/projects/ProjectScopeTab';
 import ProjectObjectivesTab from '@/components/projects/ProjectObjectivesTab';
@@ -21,6 +22,7 @@ export default function ProjectDetail() {
   const queryClient = useQueryClient();
   const { level } = useComplexityLevel();
   const [activeTab, setActiveTab] = useState('overview');
+  const [taskView, setTaskView] = useState('kanban');
   const showDocuments = level !== 'simple';
 
   const visibleSteps = showDocuments
@@ -335,12 +337,41 @@ export default function ProjectDetail() {
           )}
 
           {activeTab === 'tasks' && (
-            <TaskList
-              tasks={tasks}
-              onCreateTask={(data) => createTaskMutation.mutate(data)}
-              onUpdateTask={(task) => updateTaskMutation.mutate({ taskId: task.id, data: task })}
-              onDeleteTask={(taskId) => deleteTaskMutation.mutate(taskId)}
-            />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">{tasks.length} task{tasks.length !== 1 ? 's' : ''}</p>
+                <div className="flex gap-1 border border-border rounded-md p-1">
+                  <Button
+                    variant={taskView === 'list' ? 'default' : 'ghost'}
+                    size="icon"
+                    className="w-8 h-8"
+                    onClick={() => setTaskView('list')}
+                    title="List view"
+                  >
+                    <LayoutList className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={taskView === 'kanban' ? 'default' : 'ghost'}
+                    size="icon"
+                    className="w-8 h-8"
+                    onClick={() => setTaskView('kanban')}
+                    title="Kanban view"
+                  >
+                    <LayoutGrid className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+              {taskView === 'kanban' ? (
+                <TaskKanban projectId={id} />
+              ) : (
+                <TaskList
+                  tasks={tasks}
+                  onCreateTask={(data) => createTaskMutation.mutate(data)}
+                  onUpdateTask={(task) => updateTaskMutation.mutate({ taskId: task.id, data: task })}
+                  onDeleteTask={(taskId) => deleteTaskMutation.mutate(taskId)}
+                />
+              )}
+            </div>
           )}
 
           {activeTab === 'documents' && showDocuments && (

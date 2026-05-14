@@ -205,7 +205,10 @@ export default function Projects() {
         </Tabs>
       ) : (
         <>
-          <ProjectKanban projects={filtered} />
+          <ProjectKanban
+            projects={filtered}
+            onUpdateProject={(id, data) => updateMutation.mutate({ id, ...data })}
+          />
           {filtered.length === 0 && (
             <Card className="p-12 text-center">
               <p className="text-muted-foreground">No projects found. Create one to get started!</p>
