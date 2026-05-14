@@ -38,7 +38,10 @@ export default function ProgramForm({ program, mode = 'existing', onSubmit, onCa
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ ...data, program_mode: effectiveMode });
+    const payload = { ...data, program_mode: effectiveMode };
+    if (payload.budget === '' || payload.budget === null) delete payload.budget;
+    else payload.budget = Number(payload.budget);
+    onSubmit(payload);
   };
 
   const addMetric = () => {
