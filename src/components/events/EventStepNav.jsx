@@ -6,6 +6,7 @@ export const EXISTING_EVENT_STEPS = [
   { id: 'overview', label: 'Overview', description: 'Basic info & dates' },
   { id: 'logistics', label: 'Logistics', description: 'Location & attendance' },
   { id: 'team', label: 'Team', description: 'Organizers & volunteers' },
+  { id: 'attendees', label: 'Attendees', description: 'Guest list & invitees' },
   { id: 'checklist', label: 'Checklist', description: 'Planning checklist' },
   { id: 'memory', label: 'Memory', description: 'Lessons & notes' },
 ];
@@ -16,8 +17,13 @@ export const NEW_EVENT_STEPS = [
   { id: 'scheduling', label: 'Schedule', description: 'Date, time & recurrence' },
   { id: 'logistics', label: 'Logistics', description: 'Location, venue & needs' },
   { id: 'team', label: 'Team', description: 'Roles & responsibilities' },
-  { id: 'budget', label: 'Budget', description: 'Cost planning' },
+  { id: 'attendees', label: 'Attendees', description: 'Guest list & invitees' },
+  { id: 'timeline', label: 'Timeline', description: 'Tasks & deadlines' },
+  { id: 'budget', label: 'Budget', description: 'Itemized cost planning' },
+  { id: 'marketing', label: 'Marketing', description: 'Promotion & outreach' },
+  { id: 'creative', label: 'Creative', description: 'Theme, design & A/V' },
   { id: 'checklist', label: 'Checklist', description: 'Pre-event tasks' },
+  { id: 'post_event', label: 'Post-Event', description: 'Wrap-up & follow-up' },
 ];
 
 export default function EventStepNav({ steps, activeTab, onTabChange, event }) {
@@ -28,9 +34,14 @@ export default function EventStepNav({ steps, activeTab, onTabChange, event }) {
       case 'scheduling': return !!event?.start_date;
       case 'logistics': return !!event?.location;
       case 'team': return (event?.team_members || []).length > 0;
+      case 'attendees': return (event?.attendees || []).length > 0;
+      case 'timeline': return (event?.timeline_tasks || []).length > 0;
       case 'checklist': return (event?.checklist || []).length > 0;
       case 'memory': return !!event?.corporate_memory;
-      case 'budget': return !!event?.budget;
+      case 'budget': return !!(event?.budget || (event?.budget_items || []).length > 0);
+      case 'marketing': return !!(event?.marketing_plan?.goals || event?.marketing_plan?.channels?.length);
+      case 'creative': return !!(event?.creative_brief?.theme);
+      case 'post_event': return !!(event?.post_event?.feedback_summary || event?.post_event?.attendance_notes);
       default: return false;
     }
   };

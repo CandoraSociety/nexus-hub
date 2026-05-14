@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Edit2 } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import EventStepNav, { EXISTING_EVENT_STEPS, NEW_EVENT_STEPS } from '@/components/events/EventStepNav';
+import EventAttendeesTab from '@/components/events/EventAttendeesTab';
+import EventTimelineTab from '@/components/events/EventTimelineTab';
+import EventBudgetTab from '@/components/events/EventBudgetTab';
+import EventMarketingTab from '@/components/events/EventMarketingTab';
+import EventCreativeTab from '@/components/events/EventCreativeTab';
+import EventPostEventTab from '@/components/events/EventPostEventTab';
 
 const statusColors = {
   planning: 'bg-blue-100 text-blue-800',
@@ -20,11 +26,7 @@ const statusColors = {
 };
 
 const recurrenceLabels = {
-  daily: 'Daily',
-  weekly: 'Weekly',
-  monthly: 'Monthly',
-  yearly: 'Yearly',
-  custom: 'Custom',
+  daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly', yearly: 'Yearly', custom: 'Custom',
 };
 
 export default function EventDetail() {
@@ -57,6 +59,17 @@ export default function EventDetail() {
   const nextStep = currentStepIndex < steps.length - 1 ? steps[currentStepIndex + 1] : null;
 
   const save = (data) => updateMutation.mutate(data);
+  const startEdit = (field, value) => { setEditingField(field); setEditValue(value || ''); };
+  const saveEdit = (field) => {
+    const val = editValue;
+    // Sanitize number fields
+    if (field === 'expected_attendance' || field === 'budget') {
+      save({ [field]: val === '' ? undefined : Number(val) });
+    } else {
+      save({ [field]: val });
+    }
+    setEditingField(null);
+  };
 
   const addTeamMember = () => {
     if (!newMember.trim()) return;
@@ -83,11 +96,6 @@ export default function EventDetail() {
     save({ checklist: event.checklist.filter((_, idx) => idx !== i) });
   };
 
-  const startEdit = (field, value) => { setEditingField(field); setEditValue(value || ''); };
-  const saveEdit = (field) => { save({ [field]: editValue }); setEditingField(null); };
-
-  const firstStepId = steps[0].id;
-
   return (
     <div className="space-y-6">
       <Button variant="outline" onClick={() => navigate('/events')} className="gap-2">
@@ -98,7 +106,7 @@ export default function EventDetail() {
       <Card className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h1 className="text-3xl font-heading font-bold">{event.name}</h1>
               <Badge className={statusColors[event.status || 'planning']}>{event.status}</Badge>
               <Badge variant="outline" className={isNew ? 'text-accent border-accent' : 'text-secondary border-secondary'}>
@@ -114,9 +122,16 @@ export default function EventDetail() {
               <p className="text-sm text-muted-foreground capitalize">{event.event_type.replace(/_/g, ' ')}</p>
             )}
           </div>
-          <Button variant="outline" size="sm" onClick={() => startEdit('status', event.status)} className="gap-2">
-            <Edit2 className="w-3 h-3" /> Edit Status
-          </Button>
+          <Select value={event.status} onValueChange={v => save({ status: v })}>
+            <SelectTrigger className="w-36 h-8 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="planning">Planning</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y border-border text-sm">
@@ -133,8 +148,10 @@ export default function EventDetail() {
             <p className="font-medium">{event.location || '—'}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Expected Attendance</p>
-            <p className="font-medium">{event.expected_attendance || '—'}</p>
+            <p className="text-xs text-muted-foreground mb-1">Attendance</p>
+            <p className="font-medium">
+              {event.actual_attendance ? `${event.actual_attendance} attended` : event.expected_attendance ? `${event.expected_attendance} expected` : '—'}
+            </p>
           </div>
         </div>
       </Card>
@@ -152,22 +169,19 @@ export default function EventDetail() {
 
         <div className="mt-4 space-y-4">
 
-          {/* ─── OVERVIEW (existing) / BASICS (new) ─── */}
+          {/* ─── OVERVIEW / BASICS ─── */}
           {(activeTab === 'overview' || activeTab === 'basics') && (
             <div className="space-y-4">
-              {isNew && (
-                <Card className="p-4 bg-accent/5 border-accent/20">
-                  <p className="text-sm font-medium text-accent">💡 Planning Tip</p>
-                  <p className="text-xs text-muted-foreground mt-1">Start by clearly defining the purpose and type of your event. A well-defined event type helps align expectations and planning checklists.</p>
-                </Card>
-              )}
-              {!isNew && (
-                <Card className="p-4 bg-secondary/5 border-secondary/20">
-                  <p className="text-sm font-medium text-secondary">📋 Info Capture</p>
-                  <p className="text-xs text-muted-foreground mt-1">Make sure all basic details are documented so the team has a single source of truth for this event.</p>
-                </Card>
-              )}
-
+              <Card className={`p-4 ${isNew ? 'bg-accent/5 border-accent/20' : 'bg-secondary/5 border-secondary/20'}`}>
+                <p className="text-sm font-medium" style={{ color: isNew ? 'var(--accent)' : 'var(--secondary)' }}>
+                  {isNew ? '💡 Planning Tip' : '📋 Info Capture'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {isNew
+                    ? 'Start by clearly defining the purpose and type of your event. A well-defined event type helps align expectations and planning.'
+                    : 'Make sure all basic details are documented so the team has a single source of truth for this event.'}
+                </p>
+              </Card>
               <Card className="p-5 space-y-4">
                 <div>
                   <label className="text-xs text-muted-foreground font-medium mb-1 block">Event Name</label>
@@ -200,7 +214,7 @@ export default function EventDetail() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs text-muted-foreground font-medium mb-1 block">Status</label>
-                    <Select value={event.status} onValueChange={(v) => save({ status: v })}>
+                    <Select value={event.status} onValueChange={v => save({ status: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="planning">Planning</SelectItem>
@@ -213,7 +227,7 @@ export default function EventDetail() {
                   </div>
                   <div>
                     <label className="text-xs text-muted-foreground font-medium mb-1 block">Event Type</label>
-                    <Select value={event.event_type || ''} onValueChange={(v) => save({ event_type: v })}>
+                    <Select value={event.event_type || ''} onValueChange={v => save({ event_type: v })}>
                       <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="annual_org_event">Annual Org Event</SelectItem>
@@ -221,6 +235,8 @@ export default function EventDetail() {
                         <SelectItem value="internal_workshop">Internal Workshop</SelectItem>
                         <SelectItem value="community_event">Community Event</SelectItem>
                         <SelectItem value="training">Training</SelectItem>
+                        <SelectItem value="fundraiser">Fundraiser</SelectItem>
+                        <SelectItem value="conference">Conference</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -230,12 +246,12 @@ export default function EventDetail() {
             </div>
           )}
 
-          {/* ─── SCHEDULING (new events) ─── */}
+          {/* ─── SCHEDULING ─── */}
           {activeTab === 'scheduling' && (
             <div className="space-y-4">
               <Card className="p-4 bg-accent/5 border-accent/20">
                 <p className="text-sm font-medium text-accent">🗓 Scheduling Tip</p>
-                <p className="text-xs text-muted-foreground mt-1">For recurring events, set the recurrence pattern clearly. This helps with resource planning and calendar management across the organization.</p>
+                <p className="text-xs text-muted-foreground mt-1">For recurring events, set the recurrence pattern clearly. This helps with resource planning and calendar management.</p>
               </Card>
               <Card className="p-5 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -249,13 +265,7 @@ export default function EventDetail() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-muted/40 rounded-lg">
-                  <input
-                    type="checkbox"
-                    id="recurring-check"
-                    checked={event.is_recurring || false}
-                    onChange={e => save({ is_recurring: e.target.checked })}
-                    className="rounded"
-                  />
+                  <input type="checkbox" id="recurring-check" checked={event.is_recurring || false} onChange={e => save({ is_recurring: e.target.checked })} className="rounded" />
                   <label htmlFor="recurring-check" className="text-sm font-medium">This is a recurring event</label>
                 </div>
                 {event.is_recurring && (
@@ -280,17 +290,16 @@ export default function EventDetail() {
           {/* ─── LOGISTICS ─── */}
           {activeTab === 'logistics' && (
             <div className="space-y-4">
-              {isNew ? (
-                <Card className="p-4 bg-accent/5 border-accent/20">
-                  <p className="text-sm font-medium text-accent">📍 Logistics Tip</p>
-                  <p className="text-xs text-muted-foreground mt-1">Think through venue capacity, accessibility, AV/tech needs, parking, and any permits required. Document these early to avoid last-minute issues.</p>
-                </Card>
-              ) : (
-                <Card className="p-4 bg-secondary/5 border-secondary/20">
-                  <p className="text-sm font-medium text-secondary">📍 Capture Logistics</p>
-                  <p className="text-xs text-muted-foreground mt-1">Document all logistical details so future coordinators have everything they need.</p>
-                </Card>
-              )}
+              <Card className={`p-4 ${isNew ? 'bg-accent/5 border-accent/20' : 'bg-secondary/5 border-secondary/20'}`}>
+                <p className="text-sm font-medium" style={{ color: isNew ? 'var(--accent)' : 'var(--secondary)' }}>
+                  {isNew ? '📍 Logistics Tip' : '📍 Capture Logistics'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {isNew
+                    ? 'Think through venue capacity, accessibility, AV/tech needs, parking, and any permits required. Document these early to avoid last-minute issues.'
+                    : 'Document all logistical details so future coordinators have everything they need.'}
+                </p>
+              </Card>
               <Card className="p-5 space-y-4">
                 <div>
                   <label className="text-xs text-muted-foreground font-medium mb-1 block">Location / Venue</label>
@@ -333,17 +342,16 @@ export default function EventDetail() {
           {/* ─── TEAM ─── */}
           {activeTab === 'team' && (
             <div className="space-y-4">
-              {isNew ? (
-                <Card className="p-4 bg-accent/5 border-accent/20">
-                  <p className="text-sm font-medium text-accent">👥 Team Planning Tip</p>
-                  <p className="text-xs text-muted-foreground mt-1">Define roles clearly: who is the lead organizer? Who handles registration, venue, A/V, volunteers? Clear ownership prevents tasks from falling through the cracks.</p>
-                </Card>
-              ) : (
-                <Card className="p-4 bg-secondary/5 border-secondary/20">
-                  <p className="text-sm font-medium text-secondary">👥 Team Documentation</p>
-                  <p className="text-xs text-muted-foreground mt-1">Record all team members and organizers for this event so the organization retains this institutional knowledge.</p>
-                </Card>
-              )}
+              <Card className={`p-4 ${isNew ? 'bg-accent/5 border-accent/20' : 'bg-secondary/5 border-secondary/20'}`}>
+                <p className="text-sm font-medium" style={{ color: isNew ? 'var(--accent)' : 'var(--secondary)' }}>
+                  {isNew ? '👥 Team Planning Tip' : '👥 Team Documentation'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {isNew
+                    ? 'Define roles clearly: lead organizer, registration, venue, A/V, volunteers. Clear ownership prevents tasks from falling through the cracks.'
+                    : 'Record all team members and organizers so the organization retains this institutional knowledge.'}
+                </p>
+              </Card>
               <Card className="p-5 space-y-3">
                 <h3 className="font-semibold text-sm">Team Members & Organizers</h3>
                 <div className="space-y-2">
@@ -358,58 +366,51 @@ export default function EventDetail() {
                   ))}
                 </div>
                 <div className="flex gap-2">
-                  <Input
-                    placeholder="Add team member email or name..."
-                    value={newMember}
-                    onChange={e => setNewMember(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && addTeamMember()}
-                  />
+                  <Input placeholder="Add team member email or name..." value={newMember} onChange={e => setNewMember(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTeamMember()} />
                   <Button size="icon" variant="outline" onClick={addTeamMember}><Plus className="w-4 h-4" /></Button>
                 </div>
               </Card>
             </div>
           )}
 
-          {/* ─── BUDGET (new events) ─── */}
+          {/* ─── ATTENDEES ─── */}
+          {activeTab === 'attendees' && (
+            <EventAttendeesTab event={event} isNew={isNew} onSave={save} />
+          )}
+
+          {/* ─── TIMELINE (new events) ─── */}
+          {activeTab === 'timeline' && (
+            <EventTimelineTab event={event} onSave={save} />
+          )}
+
+          {/* ─── BUDGET ─── */}
           {activeTab === 'budget' && (
-            <div className="space-y-4">
-              <Card className="p-4 bg-accent/5 border-accent/20">
-                <p className="text-sm font-medium text-accent">💰 Budget Planning Tip</p>
-                <p className="text-xs text-muted-foreground mt-1">Break your budget into categories: venue, catering, marketing, A/V, staffing, contingency (typically 10-15%). Having a detailed budget upfront prevents overspending.</p>
-              </Card>
-              <Card className="p-5 space-y-4">
-                <div>
-                  <label className="text-xs text-muted-foreground font-medium mb-1 block">Total Budget ($)</label>
-                  {editingField === 'budget' ? (
-                    <div className="flex gap-2">
-                      <Input type="number" value={editValue} onChange={e => setEditValue(e.target.value)} />
-                      <Button size="sm" onClick={() => saveEdit('budget')}>Save</Button>
-                      <Button size="sm" variant="outline" onClick={() => setEditingField(null)}>Cancel</Button>
-                    </div>
-                  ) : (
-                    <p className="text-2xl font-bold cursor-pointer hover:text-primary" onClick={() => startEdit('budget', event.budget)}>
-                      {event.budget ? `$${Number(event.budget).toLocaleString()}` : <span className="text-base text-muted-foreground italic">Click to set budget...</span>}
-                    </p>
-                  )}
-                </div>
-              </Card>
-            </div>
+            <EventBudgetTab event={event} onSave={save} />
+          )}
+
+          {/* ─── MARKETING ─── */}
+          {activeTab === 'marketing' && (
+            <EventMarketingTab event={event} onSave={save} />
+          )}
+
+          {/* ─── CREATIVE ─── */}
+          {activeTab === 'creative' && (
+            <EventCreativeTab event={event} onSave={save} />
           )}
 
           {/* ─── CHECKLIST ─── */}
           {activeTab === 'checklist' && (
             <div className="space-y-4">
-              {isNew ? (
-                <Card className="p-4 bg-accent/5 border-accent/20">
-                  <p className="text-sm font-medium text-accent">✅ Checklist Tip</p>
-                  <p className="text-xs text-muted-foreground mt-1">A good event checklist covers: venue booking, invitations, catering, A/V setup, day-of logistics, and post-event follow-up. Assign each item to a specific person.</p>
-                </Card>
-              ) : (
-                <Card className="p-4 bg-secondary/5 border-secondary/20">
-                  <p className="text-sm font-medium text-secondary">✅ Planning Checklist</p>
-                  <p className="text-xs text-muted-foreground mt-1">Use this checklist to track all tasks needed to run this event successfully. Check off items as they're completed.</p>
-                </Card>
-              )}
+              <Card className={`p-4 ${isNew ? 'bg-accent/5 border-accent/20' : 'bg-secondary/5 border-secondary/20'}`}>
+                <p className="text-sm font-medium" style={{ color: isNew ? 'var(--accent)' : 'var(--secondary)' }}>
+                  {isNew ? '✅ Checklist Tip' : '✅ Planning Checklist'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {isNew
+                    ? 'A good event checklist covers: venue booking, invitations, catering, A/V setup, day-of logistics, and post-event follow-up. Assign each item to a specific person.'
+                    : 'Use this checklist to track all tasks needed to run this event successfully.'}
+                </p>
+              </Card>
               <Card className="p-5 space-y-3">
                 <div className="space-y-2">
                   {(event.checklist || []).map((item, i) => (
@@ -426,15 +427,10 @@ export default function EventDetail() {
                   ))}
                 </div>
                 {(event.checklist || []).length === 0 && (
-                  <p className="text-sm text-muted-foreground italic text-center py-4">No checklist items yet. Add some below.</p>
+                  <p className="text-sm text-muted-foreground italic text-center py-4">No checklist items yet.</p>
                 )}
                 <div className="flex gap-2">
-                  <Input
-                    placeholder="Add checklist item..."
-                    value={newChecklistItem}
-                    onChange={e => setNewChecklistItem(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && addChecklistItem()}
-                  />
+                  <Input placeholder="Add checklist item..." value={newChecklistItem} onChange={e => setNewChecklistItem(e.target.value)} onKeyDown={e => e.key === 'Enter' && addChecklistItem()} />
                   <Button size="icon" variant="outline" onClick={addChecklistItem}><Plus className="w-4 h-4" /></Button>
                 </div>
                 {(event.checklist || []).length > 0 && (
@@ -446,12 +442,17 @@ export default function EventDetail() {
             </div>
           )}
 
+          {/* ─── POST-EVENT ─── */}
+          {activeTab === 'post_event' && (
+            <EventPostEventTab event={event} onSave={save} />
+          )}
+
           {/* ─── MEMORY (existing events) ─── */}
           {activeTab === 'memory' && (
             <div className="space-y-4">
               <Card className="p-4 bg-secondary/5 border-secondary/20">
                 <p className="text-sm font-medium text-secondary">🧠 Institutional Memory</p>
-                <p className="text-xs text-muted-foreground mt-1">Documenting what worked and what didn't is one of the most valuable things you can do for future event coordinators. Don't skip this step!</p>
+                <p className="text-xs text-muted-foreground mt-1">Documenting what worked and what didn't is one of the most valuable things you can do for future event coordinators.</p>
               </Card>
               <Card className="p-5 space-y-4">
                 <div>

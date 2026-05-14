@@ -27,6 +27,8 @@
         "internal_workshop",
         "community_event",
         "training",
+        "fundraiser",
+        "conference",
         "other"
       ],
       "description": "Type of event"
@@ -51,7 +53,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Team member emails"
+      "description": "Team member emails or names"
     },
     "start_date": {
       "type": "string",
@@ -71,9 +73,199 @@
       "type": "number",
       "description": "Expected number of attendees"
     },
+    "actual_attendance": {
+      "type": "number",
+      "description": "Actual number of attendees (post-event)"
+    },
     "budget": {
       "type": "number",
-      "description": "Event budget"
+      "description": "Total event budget"
+    },
+    "budget_spent": {
+      "type": "number",
+      "description": "Actual amount spent"
+    },
+    "budget_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "estimated": {
+            "type": "number"
+          },
+          "actual": {
+            "type": "number"
+          },
+          "paid": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "description": "Itemized budget breakdown"
+    },
+    "attendees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "invited",
+              "confirmed",
+              "attended",
+              "no_show",
+              "cancelled"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Attendee/invitee list"
+    },
+    "timeline_tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "due_date": {
+            "type": "string"
+          },
+          "assigned_to": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "pre_event",
+              "day_of",
+              "post_event"
+            ]
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Timeline tasks with deadlines and ownership"
+    },
+    "marketing_plan": {
+      "type": "object",
+      "properties": {
+        "goals": {
+          "type": "string"
+        },
+        "target_audience": {
+          "type": "string"
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "key_messages": {
+          "type": "string"
+        },
+        "promotional_items": {
+          "type": "string"
+        },
+        "social_media_plan": {
+          "type": "string"
+        },
+        "email_plan": {
+          "type": "string"
+        },
+        "press_outreach": {
+          "type": "string"
+        }
+      },
+      "description": "Marketing and outreach plan"
+    },
+    "creative_brief": {
+      "type": "object",
+      "properties": {
+        "theme": {
+          "type": "string"
+        },
+        "color_palette": {
+          "type": "string"
+        },
+        "tone": {
+          "type": "string"
+        },
+        "branding_notes": {
+          "type": "string"
+        },
+        "design_assets_needed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "av_requirements": {
+          "type": "string"
+        },
+        "decor_notes": {
+          "type": "string"
+        },
+        "entertainment": {
+          "type": "string"
+        }
+      },
+      "description": "Creative and visual direction"
+    },
+    "post_event": {
+      "type": "object",
+      "properties": {
+        "attendance_notes": {
+          "type": "string"
+        },
+        "budget_notes": {
+          "type": "string"
+        },
+        "feedback_summary": {
+          "type": "string"
+        },
+        "media_coverage": {
+          "type": "string"
+        },
+        "follow_up_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sponsor_debrief": {
+          "type": "string"
+        }
+      },
+      "description": "Post-event wrap-up"
     },
     "is_recurring": {
       "type": "boolean",
