@@ -61,10 +61,11 @@ Deno.serve(async (req) => {
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      automatic_payment_methods: { enabled: true },
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'cad',
             product_data: {
               name: `${event.name} — ${ticketType.name}`,
               description: ticketType.description || undefined,

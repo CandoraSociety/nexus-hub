@@ -29,30 +29,6 @@
       "type": "string",
       "description": "Submitter or org website"
     },
-    "billing_name": {
-      "type": "string",
-      "description": "Billing contact name or organization"
-    },
-    "billing_address": {
-      "type": "string",
-      "description": "Billing street address"
-    },
-    "billing_city": {
-      "type": "string",
-      "description": "Billing city"
-    },
-    "billing_state": {
-      "type": "string",
-      "description": "Billing state or province"
-    },
-    "billing_zip": {
-      "type": "string",
-      "description": "Billing ZIP or postal code"
-    },
-    "billing_country": {
-      "type": "string",
-      "description": "Billing country"
-    },
     "event_name": {
       "type": "string",
       "description": "Event name"
@@ -108,6 +84,43 @@
       "type": "boolean",
       "default": false,
       "description": "Submitter agreed to platform fee structure"
+    },
+    "billing_name": {
+      "type": "string",
+      "description": "Legal name or organization for payout"
+    },
+    "billing_address": {
+      "type": "string",
+      "description": "Payout street address"
+    },
+    "billing_city": {
+      "type": "string",
+      "description": "Payout city"
+    },
+    "billing_state": {
+      "type": "string",
+      "description": "Province (Canadian)"
+    },
+    "billing_zip": {
+      "type": "string",
+      "description": "Postal code"
+    },
+    "billing_country": {
+      "type": "string",
+      "default": "CA",
+      "description": "Country (default Canada)"
+    },
+    "payout_transit": {
+      "type": "string",
+      "description": "Canadian bank transit number (5 digits)"
+    },
+    "payout_institution": {
+      "type": "string",
+      "description": "Canadian bank institution number (3 digits)"
+    },
+    "payout_account": {
+      "type": "string",
+      "description": "Canadian bank account number"
     },
     "status": {
       "type": "string",

@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Plus, Trash2, CheckCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, CheckCircle, Loader2, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const PLATFORM_FEE_PERCENT = 5;
 const PLATFORM_FEE_FLAT = 1.50;
+
+const CANADIAN_PROVINCES = [
+  "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT"
+];
+
+const STEP_LABELS = ["Your Info", "Event Details", "Tickets & Fees", "Payout Info"];
 
 export default function SubmitEvent() {
   const [step, setStep] = useState(1);
@@ -20,12 +26,6 @@ export default function SubmitEvent() {
     organization_name: "",
     organization_type: "business",
     website: "",
-    billing_name: "",
-    billing_address: "",
-    billing_city: "",
-    billing_state: "",
-    billing_zip: "",
-    billing_country: "US",
     event_name: "",
     event_description: "",
     event_type: "",
@@ -34,7 +34,17 @@ export default function SubmitEvent() {
     location: "",
     expected_attendance: "",
     ticket_tiers: [],
-    agreed_to_fee_structure: false
+    agreed_to_fee_structure: false,
+    // Payout info (last step)
+    billing_name: "",
+    billing_address: "",
+    billing_city: "",
+    billing_state: "AB",
+    billing_zip: "",
+    billing_country: "CA",
+    payout_transit: "",
+    payout_institution: "",
+    payout_account: "",
   });
 
   const update = (field, value) => setForm(f => ({ ...f, [field]: value }));
@@ -121,15 +131,12 @@ export default function SubmitEvent() {
               {s < 4 && <div className={`h-0.5 w-8 ${step > s ? "bg-amber-400" : "bg-gray-200"}`} />}
             </div>
           ))}
-          <div className="ml-2 text-sm text-gray-500">
-            {step === 1 && "Your Info"}
-            {step === 2 && "Billing Info"}
-            {step === 3 && "Event Details"}
-            {step === 4 && "Tickets & Fees"}
-          </div>
+          <div className="ml-2 text-sm text-gray-500 font-medium">{STEP_LABELS[step - 1]}</div>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+
+          {/* STEP 1: Your Info */}
           {step === 1 && (
             <div className="space-y-4">
               <h2 className="font-semibold text-gray-800 mb-4">Your Organization</h2>
@@ -173,56 +180,14 @@ export default function SubmitEvent() {
                   onClick={() => setStep(2)}
                   disabled={!form.submitter_name || !form.submitter_email}
                 >
-                  Next: Billing Info
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-4">
-              <h2 className="font-semibold text-gray-800 mb-1">Billing Information</h2>
-              <p className="text-sm text-gray-500 mb-4">Used for invoicing platform fees and receipts. Card details are collected securely at checkout.</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Billing Name *</label>
-                  <Input value={form.billing_name} onChange={e => update("billing_name", e.target.value)} placeholder="Name on account or organization" />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Billing Address</label>
-                  <Input value={form.billing_address} onChange={e => update("billing_address", e.target.value)} placeholder="Street address" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">City</label>
-                  <Input value={form.billing_city} onChange={e => update("billing_city", e.target.value)} placeholder="City" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">State / Province</label>
-                  <Input value={form.billing_state} onChange={e => update("billing_state", e.target.value)} placeholder="State" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">ZIP / Postal Code</label>
-                  <Input value={form.billing_zip} onChange={e => update("billing_zip", e.target.value)} placeholder="ZIP" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Country</label>
-                  <Input value={form.billing_country} onChange={e => update("billing_country", e.target.value)} placeholder="Country" />
-                </div>
-              </div>
-              <div className="flex justify-between pt-2">
-                <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
-                <Button
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
-                  onClick={() => setStep(3)}
-                  disabled={!form.billing_name}
-                >
                   Next: Event Details
                 </Button>
               </div>
             </div>
           )}
 
-          {step === 3 && (
+          {/* STEP 2: Event Details */}
+          {step === 2 && (
             <div className="space-y-4">
               <h2 className="font-semibold text-gray-800 mb-4">Event Details</h2>
               <div>
@@ -260,10 +225,10 @@ export default function SubmitEvent() {
                 </div>
               </div>
               <div className="flex justify-between pt-2">
-                <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
+                <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
                 <Button
                   className="bg-amber-500 hover:bg-amber-600 text-white"
-                  onClick={() => setStep(4)}
+                  onClick={() => setStep(3)}
                   disabled={!form.event_name || !form.start_date}
                 >
                   Next: Tickets & Fees
@@ -272,7 +237,8 @@ export default function SubmitEvent() {
             </div>
           )}
 
-          {step === 4 && (
+          {/* STEP 3: Tickets & Fees */}
+          {step === 3 && (
             <div className="space-y-4">
               <h2 className="font-semibold text-gray-800 mb-1">Ticket Tiers</h2>
               <p className="text-sm text-gray-500 mb-4">Add ticket types (e.g. General, VIP). Leave empty for a free event.</p>
@@ -291,7 +257,7 @@ export default function SubmitEvent() {
                       <Input value={tier.name} onChange={e => updateTier(i, "name", e.target.value)} placeholder="General" />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 mb-1 block">Price ($)</label>
+                      <label className="text-xs text-gray-500 mb-1 block">Price (CAD)</label>
                       <Input type="number" value={tier.price} onChange={e => updateTier(i, "price", e.target.value)} placeholder="0.00" />
                     </div>
                     <div>
@@ -314,7 +280,7 @@ export default function SubmitEvent() {
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-2">
                 <h3 className="font-medium text-amber-800 mb-2">Platform Fee Structure</h3>
                 <p className="text-sm text-amber-700">
-                  For each ticket sold through our portal, a service fee of <strong>{PLATFORM_FEE_PERCENT}% + ${PLATFORM_FEE_FLAT.toFixed(2)}/ticket</strong> will be added to the buyer's total. These fees are collected by the platform and do not come out of your revenue.
+                  For each ticket sold through our portal, a service fee of <strong>{PLATFORM_FEE_PERCENT}% + ${PLATFORM_FEE_FLAT.toFixed(2)} CAD/ticket</strong> will be added to the buyer's total. These fees are collected by the platform and do not come out of your revenue.
                 </p>
               </div>
 
@@ -331,11 +297,120 @@ export default function SubmitEvent() {
               </label>
 
               <div className="flex justify-between pt-2">
+                <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
+                <Button
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  onClick={() => setStep(4)}
+                  disabled={!form.agreed_to_fee_structure}
+                >
+                  Next: Payout Info
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 4: Payout Info */}
+          {step === 4 && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="font-semibold text-gray-800 mb-1">Payout Information</h2>
+                <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl p-3 mt-2">
+                  <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-blue-700">
+                    This information is used to pay <strong>you</strong> your ticket revenue after each event. We collect from ticket buyers and remit your proceeds (minus platform fees) to your account. No charge is made to you at submission.
+                  </p>
+                </div>
+              </div>
+
+              {/* Legal / Contact */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Legal Name or Organization *</label>
+                <Input value={form.billing_name} onChange={e => update("billing_name", e.target.value)} placeholder="As it appears on your bank account" />
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Street Address *</label>
+                <Input value={form.billing_address} onChange={e => update("billing_address", e.target.value)} placeholder="123 Main St" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">City *</label>
+                  <Input value={form.billing_city} onChange={e => update("billing_city", e.target.value)} placeholder="Calgary" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Province *</label>
+                  <select
+                    value={form.billing_state}
+                    onChange={e => update("billing_state", e.target.value)}
+                    className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                  >
+                    {CANADIAN_PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Postal Code *</label>
+                  <Input value={form.billing_zip} onChange={e => update("billing_zip", e.target.value)} placeholder="T2P 1J9" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Country</label>
+                  <Input value={form.billing_country} onChange={e => update("billing_country", e.target.value)} />
+                </div>
+              </div>
+
+              {/* Banking details */}
+              <div className="border-t border-gray-100 pt-4 mt-2">
+                <p className="text-sm font-medium text-gray-700 mb-3">Canadian Bank Account (for EFT payout)</p>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">Transit # (5 digits) *</label>
+                    <Input
+                      value={form.payout_transit}
+                      onChange={e => update("payout_transit", e.target.value)}
+                      placeholder="12345"
+                      maxLength={5}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">Institution # (3 digits) *</label>
+                    <Input
+                      value={form.payout_institution}
+                      onChange={e => update("payout_institution", e.target.value)}
+                      placeholder="001"
+                      maxLength={3}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">Account # *</label>
+                    <Input
+                      value={form.payout_account}
+                      onChange={e => update("payout_account", e.target.value)}
+                      placeholder="1234567"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400 mt-2">
+                  Found on your cheque: transit (5 digits) → institution (3 digits) → account number. Your information is stored securely and used only for EFT payouts.
+                </p>
+              </div>
+
+              <div className="flex justify-between pt-2">
                 <Button variant="outline" onClick={() => setStep(3)}>Back</Button>
                 <Button
                   className="bg-amber-500 hover:bg-amber-600 text-white"
                   onClick={handleSubmit}
-                  disabled={submitting || !form.agreed_to_fee_structure}
+                  disabled={
+                    submitting ||
+                    !form.billing_name ||
+                    !form.billing_address ||
+                    !form.billing_city ||
+                    !form.billing_zip ||
+                    !form.payout_transit ||
+                    !form.payout_institution ||
+                    !form.payout_account
+                  }
                 >
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   {submitting ? "Submitting..." : "Submit Event for Review"}
