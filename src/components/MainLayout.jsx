@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Briefcase, Zap, Calendar, BookOpen, LogOut, ChevronLeft, ChevronRight, Globe, ClipboardList } from 'lucide-react';
+import { Briefcase, Zap, Calendar, BookOpen, LogOut, ChevronLeft, ChevronRight, Globe, ClipboardList, ExternalLink, LayoutDashboard } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/AuthContext';
@@ -20,7 +20,8 @@ export default function MainLayout() {
 
   const portalNavItems = [
     { path: '/submissions', label: 'Submissions', icon: ClipboardList },
-    { path: '/portal', label: 'Live Portal', icon: Globe, external: true },
+    { path: '/portal-preview', label: 'Portal Preview', icon: LayoutDashboard },
+    { path: '/portal', label: 'Live Portal', icon: ExternalLink, external: true },
   ];
 
   const isActive = (path) => location.pathname === path;

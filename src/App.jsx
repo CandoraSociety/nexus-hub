@@ -16,6 +16,7 @@ import EventDetail from '@/pages/EventDetail';
 import GuestList from '@/pages/GuestList';
 import EventsCalendar from '@/pages/EventsCalendar';
 import EventSubmissions from '@/pages/EventSubmissions';
+import PortalPreview from '@/pages/PortalPreview';
 import EventPortal from '@/pages/portal/EventPortal';
 import EventPortalDetail from '@/pages/portal/EventPortalDetail';
 import SubmitEvent from '@/pages/portal/SubmitEvent';
@@ -58,6 +59,7 @@ const AuthenticatedApp = () => {
         <Route path="/events-calendar" element={<EventsCalendar />} />
         <Route path="/guest-list" element={<GuestList />} />
         <Route path="/submissions" element={<EventSubmissions />} />
+        <Route path="/portal-preview" element={<PortalPreview />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
