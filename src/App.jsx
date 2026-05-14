@@ -10,7 +10,7 @@ import Dashboard from '@/pages/Dashboard';
 import Programs from '@/pages/Programs';
 import Projects from '@/pages/Projects';
 import ProjectDetail from '@/pages/ProjectDetail';
-import Events from '@/pages/Events.jsx';
+import Events from '@/pages/Events';
 import ProgramDetail from '@/pages/ProgramDetail';
 import EventDetail from '@/pages/EventDetail';
 
