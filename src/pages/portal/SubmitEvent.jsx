@@ -89,7 +89,7 @@ export default function SubmitEvent() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-amber-50 flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.05)' }}>
         <div className="bg-white rounded-2xl p-10 max-w-md w-full text-center shadow-sm">
           <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Submission Received!</h2>
@@ -98,7 +98,7 @@ export default function SubmitEvent() {
           </p>
           <p className="text-xs text-gray-400 mb-6">Submission ID: {submissionId}</p>
           <Link to="/portal">
-            <Button className="bg-amber-500 hover:bg-amber-600 text-white">Back to Events Portal</Button>
+            <Button className="text-white" style={{ backgroundColor: 'var(--primary-brand, #f59e0b)' }}>Back to Events Portal</Button>
           </Link>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function SubmitEvent() {
   }
 
   return (
-    <div className="min-h-screen bg-amber-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.05)' }}>
       <div className="bg-white border-b border-gray-100 px-4 py-3">
         <div className="max-w-2xl mx-auto">
           <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-amber-600">
@@ -125,10 +125,13 @@ export default function SubmitEvent() {
         <div className="flex items-center gap-3 mb-8">
           {[1, 2, 3, 4].map(s => (
             <div key={s} className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                step >= s ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-400"
-              }`}>{s}</div>
-              {s < 4 && <div className={`h-0.5 w-8 ${step > s ? "bg-amber-400" : "bg-gray-200"}`} />}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors text-white ${
+                step >= s ? "" : "bg-gray-100 text-gray-400"
+              }`}
+              style={step >= s ? { backgroundColor: 'var(--primary-brand, #f59e0b)' } : {}}>
+                {s}
+              </div>
+              {s < 4 && <div className={`h-0.5 w-8 ${step > s ? "" : "bg-gray-200"}`} style={step > s ? { backgroundColor: 'var(--primary-brand, #f59e0b)' } : {}} />}
             </div>
           ))}
           <div className="ml-2 text-sm text-gray-500 font-medium">{STEP_LABELS[step - 1]}</div>
@@ -176,12 +179,13 @@ export default function SubmitEvent() {
               </div>
               <div className="flex justify-end pt-2">
                 <Button
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
-                  onClick={() => setStep(2)}
-                  disabled={!form.submitter_name || !form.submitter_email}
-                >
-                  Next: Event Details
-                </Button>
+                    className="text-white"
+                    style={{ backgroundColor: 'var(--primary-brand, #f59e0b)' }}
+                    onClick={() => setStep(2)}
+                    disabled={!form.submitter_name || !form.submitter_email}
+                  >
+                    Next: Event Details
+                  </Button>
               </div>
             </div>
           )}
@@ -227,7 +231,8 @@ export default function SubmitEvent() {
               <div className="flex justify-between pt-2">
                 <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
                 <Button
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  className="text-white"
+                  style={{ backgroundColor: 'var(--primary-brand, #f59e0b)' }}
                   onClick={() => setStep(3)}
                   disabled={!form.event_name || !form.start_date}
                 >
@@ -277,9 +282,9 @@ export default function SubmitEvent() {
               </Button>
 
               {/* Fee disclosure */}
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-2">
-                <h3 className="font-medium text-amber-800 mb-2">Platform Fee Structure</h3>
-                <p className="text-sm text-amber-700">
+              <div className="rounded-xl p-4 mt-2" style={{ backgroundColor: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.1)', border: '1px solid rgba(var(--primary-brand-rgb, 245 158 11), 0.3)' }}>
+                <h3 className="font-medium mb-2" style={{ color: 'var(--primary-brand, #f59e0b)' }}>Platform Fee Structure</h3>
+                <p className="text-sm" style={{ color: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.8)' }}>
                   For each ticket sold through our portal, a service fee of <strong>{PLATFORM_FEE_PERCENT}% + ${PLATFORM_FEE_FLAT.toFixed(2)} CAD/ticket</strong> will be added to the buyer's total. These fees are collected by the platform and do not come out of your revenue.
                 </p>
               </div>
@@ -299,7 +304,8 @@ export default function SubmitEvent() {
               <div className="flex justify-between pt-2">
                 <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
                 <Button
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  className="text-white"
+                  style={{ backgroundColor: 'var(--primary-brand, #f59e0b)' }}
                   onClick={() => setStep(4)}
                   disabled={!form.agreed_to_fee_structure}
                 >
@@ -399,7 +405,8 @@ export default function SubmitEvent() {
               <div className="flex justify-between pt-2">
                 <Button variant="outline" onClick={() => setStep(3)}>Back</Button>
                 <Button
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  className="text-white"
+                  style={{ backgroundColor: 'var(--primary-brand, #f59e0b)' }}
                   onClick={handleSubmit}
                   disabled={
                     submitting ||

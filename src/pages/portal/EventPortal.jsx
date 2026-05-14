@@ -45,15 +45,15 @@ export default function EventPortal() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white" style={{ '--primary-brand-light': 'var(--primary-brand, #f59e0b)', '--secondary-brand-light': 'var(--secondary-brand, #f97316)' }}>
       {/* Hero */}
-      <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white py-16 px-4">
+      <div className="text-white py-16 px-4" style={{ background: `linear-gradient(to right, var(--primary-brand, #f59e0b), var(--secondary-brand, #f97316))` }}>
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Community Events Portal</h1>
-          <p className="text-xl text-amber-100 mb-8">Discover and attend events happening in your community</p>
+          <p className="text-xl mb-8" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Discover and attend events happening in your community</p>
           <div className="max-w-xl mx-auto flex gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
               <Input
                 placeholder="Search events..."
                 value={search}
@@ -84,9 +84,10 @@ export default function EventPortal() {
               onClick={() => setFilter(f.id)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 filter === f.id
-                  ? "bg-amber-500 text-white"
-                  : "bg-white text-gray-600 border border-gray-200 hover:border-amber-300"
+                  ? "text-white"
+                  : "bg-white text-gray-600 border border-gray-200"
               }`}
+              style={filter === f.id ? { backgroundColor: 'var(--primary-brand, #f59e0b)' } : {}}
             >
               {f.label}
             </button>
@@ -95,7 +96,7 @@ export default function EventPortal() {
 
         {loading ? (
           <div className="flex items-center justify-center py-24">
-            <div className="w-8 h-8 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 rounded-full animate-spin" style={{ borderColor: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.3)', borderTopColor: 'var(--primary-brand, #f59e0b)' }} />
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 text-gray-400">
@@ -105,7 +106,7 @@ export default function EventPortal() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map(event => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} event={event} branding={{ primaryBrand: 'var(--primary-brand, #f59e0b)', secondaryBrand: 'var(--secondary-brand, #f97316)' }} />
             ))}
           </div>
         )}
@@ -115,7 +116,7 @@ export default function EventPortal() {
   );
 }
 
-function EventCard({ event }) {
+function EventCard({ event, branding }) {
   const cheapestTicket = event.ticket_types?.length > 0
     ? event.ticket_types.reduce((min, tt) => tt.price < min.price ? tt : min, event.ticket_types[0])
     : null;
@@ -126,10 +127,10 @@ function EventCard({ event }) {
         {event.cover_image_url ? (
           <img src={event.cover_image_url} alt={event.name} className="w-full h-44 object-cover" />
         ) : (
-          <div className="w-full h-44 bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
-            <Calendar className="w-12 h-12 text-amber-300" />
-          </div>
-        )}
+           <div className="w-full h-44 flex items-center justify-center" style={{ background: `linear-gradient(to bottom right, rgba(var(--primary-brand-rgb, 245 158 11), 0.1), rgba(var(--secondary-brand-rgb, 249 115 22), 0.1))` }}>
+             <Calendar className="w-12 h-12" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
+           </div>
+         )}
         <div className="p-5">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h3 className="font-semibold text-gray-900 leading-tight line-clamp-2">{event.name}</h3>
@@ -140,26 +141,26 @@ function EventCard({ event }) {
           )}
           <div className="space-y-1.5 text-xs text-gray-500">
             <div className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-amber-400" />
-              {event.start_date ? format(new Date(event.start_date), "MMM d, yyyy · h:mm a") : "Date TBD"}
-            </div>
-            {event.location && (
-              <div className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-amber-400" />
+               <Calendar className="w-3.5 h-3.5" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
+               {event.start_date ? format(new Date(event.start_date), "MMM d, yyyy · h:mm a") : "Date TBD"}
+             </div>
+             {event.location && (
+               <div className="flex items-center gap-1.5">
+                 <MapPin className="w-3.5 h-3.5" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
                 <span className="line-clamp-1">{event.location}</span>
               </div>
             )}
           </div>
           <div className="mt-4 flex items-center justify-between">
             {event.is_ticketed && cheapestTicket ? (
-              <div className="flex items-center gap-1 text-amber-600 font-semibold text-sm">
+              <div className="flex items-center gap-1 font-semibold text-sm" style={{ color: 'var(--primary-brand, #f59e0b)' }}>
                 <Ticket className="w-4 h-4" />
                 {cheapestTicket.price === 0 || cheapestTicket.is_free ? "Free" : `From $${cheapestTicket.price.toFixed(2)}`}
               </div>
             ) : (
               <span className="text-sm text-green-600 font-medium">Free / RSVP</span>
             )}
-            <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
           </div>
         </div>
       </div>

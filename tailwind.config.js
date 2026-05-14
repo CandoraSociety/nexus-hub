@@ -4,6 +4,10 @@ module.exports = {
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
+      colors: {
+        'brand-primary': 'var(--primary-brand, hsl(var(--primary)))',
+        'brand-secondary': 'var(--secondary-brand, hsl(var(--secondary)))',
+      },
       fontFamily: {
         sans: ['var(--font-sans)'],
         heading: ['var(--font-heading)'],

@@ -28,16 +28,16 @@ export default function EventPortalDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-amber-50">
-        <div className="w-8 h-8 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.05)' }}>
+        <div className="w-8 h-8 border-4 rounded-full animate-spin" style={{ borderColor: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.3)', borderTopColor: 'var(--primary-brand, #f59e0b)' }} />
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-amber-50 text-center px-4">
-        <AlertCircle className="w-12 h-12 text-amber-300 mb-4" />
+      <div className="min-h-screen flex flex-col items-center justify-center text-center px-4" style={{ backgroundColor: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.05)' }}>
+        <AlertCircle className="w-12 h-12 mb-4" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
         <h2 className="text-xl font-semibold text-gray-700 mb-2">Event not found</h2>
         <Link to="/portal"><Button variant="outline">Back to Events</Button></Link>
       </div>
@@ -47,11 +47,11 @@ export default function EventPortalDetail() {
   const isInIframe = window !== window.parent;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
+    <div className="min-h-screen" style={{ background: `linear-gradient(to bottom, rgba(var(--primary-brand-rgb, 245 158 11), 0.05), white)` }}>
       {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-3">
         <div className="max-w-4xl mx-auto">
-          <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-amber-600 transition-colors">
+          <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm text-gray-500 transition-colors" style={{ '--hover-color': 'var(--primary-brand, #f59e0b)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-brand, #f59e0b)'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgb(107, 114, 128)'}>
             <ArrowLeft className="w-4 h-4" /> Back to Events
           </Link>
         </div>
@@ -61,7 +61,7 @@ export default function EventPortalDetail() {
       {event.cover_image_url ? (
         <img src={event.cover_image_url} alt={event.name} className="w-full h-64 md:h-80 object-cover" />
       ) : (
-        <div className="w-full h-48 bg-gradient-to-r from-amber-400 to-orange-400" />
+        <div className="w-full h-48" style={{ background: `linear-gradient(to right, var(--primary-brand, #f59e0b), var(--secondary-brand, #f97316))` }} />
       )}
 
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -76,7 +76,7 @@ export default function EventPortalDetail() {
 
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="flex items-start gap-2 text-sm text-gray-600">
-                <Calendar className="w-4 h-4 text-amber-500 mt-0.5" />
+                 <Calendar className="w-4 h-4 mt-0.5" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
                 <div>
                   <div className="font-medium">{format(new Date(event.start_date), "EEEE, MMMM d, yyyy")}</div>
                   <div className="text-gray-400">{format(new Date(event.start_date), "h:mm a")}
@@ -86,7 +86,7 @@ export default function EventPortalDetail() {
               </div>
               {event.location && (
                 <div className="flex items-start gap-2 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4 text-amber-500 mt-0.5" />
+                  <MapPin className="w-4 h-4 mt-0.5" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
                   <div>
                     <div className="font-medium">{event.location}</div>
                   </div>
@@ -94,13 +94,13 @@ export default function EventPortalDetail() {
               )}
               {event.expected_attendance && (
                 <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Users className="w-4 h-4 text-amber-500" />
+                  <Users className="w-4 h-4" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
                   <span>Expected: ~{event.expected_attendance} attendees</span>
                 </div>
               )}
               {event.organizer_name && (
                 <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Globe className="w-4 h-4 text-amber-500" />
+                  <Globe className="w-4 h-4" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
                   <span>By {event.organizer_name}</span>
                 </div>
               )}
@@ -131,13 +131,14 @@ export default function EventPortalDetail() {
                       <div
                         key={tt.id}
                         onClick={() => !isSoldOut && setSelectedTicket(tt)}
-                        className={`rounded-xl border-2 p-3 cursor-pointer transition-all ${
-                          selectedTicket?.id === tt.id
-                            ? "border-amber-400 bg-amber-50"
-                            : isSoldOut
-                            ? "border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed"
-                            : "border-gray-100 hover:border-amber-200"
-                        }`}
+                        className={`rounded-xl border-2 p-3 cursor-pointer transition-all border-gray-100 ${
+                           selectedTicket?.id === tt.id
+                             ? "bg-opacity-10"
+                             : isSoldOut
+                             ? "bg-gray-50 opacity-50 cursor-not-allowed"
+                             : ""
+                         }`}
+                        style={selectedTicket?.id === tt.id ? { borderColor: 'var(--primary-brand, #f59e0b)', backgroundColor: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.1)' } : {}}
                       >
                         <div className="flex justify-between items-start">
                           <div>
@@ -145,9 +146,9 @@ export default function EventPortalDetail() {
                             {tt.description && <div className="text-xs text-gray-400 mt-0.5">{tt.description}</div>}
                           </div>
                           <div className="text-right">
-                            <div className="font-bold text-amber-600">
-                              {tt.price === 0 || tt.is_free ? "Free" : `$${tt.price.toFixed(2)}`}
-                            </div>
+                            <div className="font-bold" style={{ color: 'var(--primary-brand, #f59e0b)' }}>
+                               {tt.price === 0 || tt.is_free ? "Free" : `$${tt.price.toFixed(2)}`}
+                             </div>
                             <div className="text-xs text-gray-400">
                               {isSoldOut ? "Sold out" : `${available} left`}
                             </div>
@@ -164,7 +165,8 @@ export default function EventPortalDetail() {
                   )}
 
                   <Button
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+                    className="w-full text-white"
+                    style={{ backgroundColor: 'var(--primary-brand, #f59e0b)' }}
                     disabled={!selectedTicket}
                     onClick={() => {
                       if (isInIframe) {
@@ -183,7 +185,7 @@ export default function EventPortalDetail() {
                   <div className="text-2xl mb-2">🎉</div>
                   <p className="text-sm text-gray-500">This is a free event. Just show up!</p>
                   {event.organizer_email && (
-                    <a href={`mailto:${event.organizer_email}`} className="text-sm text-amber-600 hover:underline mt-2 block">
+                    <a href={`mailto:${event.organizer_email}`} className="text-sm hover:underline mt-2 block" style={{ color: 'var(--primary-brand, #f59e0b)' }}>
                       Contact organizer
                     </a>
                   )}

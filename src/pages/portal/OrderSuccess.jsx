@@ -8,7 +8,7 @@ export default function OrderSuccess() {
   const sessionId = urlParams.get("session_id");
 
   return (
-    <div className="min-h-screen bg-amber-50 flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'rgba(var(--primary-brand-rgb, 245 158 11), 0.05)' }}>
       <div className="bg-white rounded-2xl p-10 max-w-md w-full text-center shadow-sm">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
           <CheckCircle className="w-9 h-9 text-green-500" />
@@ -20,15 +20,15 @@ export default function OrderSuccess() {
 
         <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left space-y-3">
           <div className="flex items-center gap-3 text-sm text-gray-600">
-            <Ticket className="w-4 h-4 text-amber-500" />
+            <Ticket className="w-4 h-4" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
             <span>Tickets have been confirmed and reserved in your name.</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-gray-600">
-            <Mail className="w-4 h-4 text-amber-500" />
+            <Mail className="w-4 h-4" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
             <span>Check your inbox for your ticket confirmation.</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-gray-600">
-            <Calendar className="w-4 h-4 text-amber-500" />
+            <Calendar className="w-4 h-4" style={{ color: 'var(--primary-brand, #f59e0b)' }} />
             <span>Add the event to your calendar!</span>
           </div>
         </div>
@@ -38,7 +38,7 @@ export default function OrderSuccess() {
         )}
 
         <Link to="/portal">
-          <Button className="bg-amber-500 hover:bg-amber-600 text-white w-full">
+          <Button className="text-white w-full" style={{ backgroundColor: 'var(--primary-brand, #f59e0b)' }}>
             Browse More Events
           </Button>
         </Link>

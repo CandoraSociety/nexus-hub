@@ -4,6 +4,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, useRoutes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import { BrandingProvider } from '@/lib/brandingContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import MainLayout from '@/components/MainLayout';
 import Dashboard from '@/pages/Dashboard';
@@ -71,8 +72,9 @@ function App() {
 
   return (
     <Router>
-      <AuthProvider>
-        <QueryClientProvider client={queryClientInstance}>
+      <BrandingProvider>
+        <AuthProvider>
+          <QueryClientProvider client={queryClientInstance}>
           <Routes>
             {/* Public Portal routes - no auth required */}
             <Route path="/portal" element={<EventPortal />} />
@@ -84,7 +86,8 @@ function App() {
           </Routes>
           <Toaster />
         </QueryClientProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </BrandingProvider>
     </Router>
   )
 }
