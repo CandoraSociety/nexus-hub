@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, useRoutes } from 'react-router-dom';
+import { useBranding } from '@/hooks/useBranding';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { BrandingProvider } from '@/lib/brandingContext';
@@ -25,6 +26,7 @@ import OrderSuccess from '@/pages/portal/OrderSuccess';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  useBranding();
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
